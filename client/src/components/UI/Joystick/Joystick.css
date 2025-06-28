@@ -1,0 +1,131 @@
+.joystick-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 204px;
+  height: 152px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 56px;
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation; /* Улучшает обработку тач-ивентов */
+}
+
+.joystick-button {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  box-shadow: 3px 4px 9px 2px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 3px 4px 9px 2px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 3px 4px 9px 2px rgba(0, 0, 0, 0.3);
+
+  justify-content: center;
+  z-index: 5;
+  align-items: center;
+  transition: all 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent; /* Убирает серый фон при таче на iOS */
+}
+
+/* .joystick-button img {
+  width: 24px;
+  height: 24px;
+} */
+
+.joystick-container-press-down::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 90%;
+  height: 20%;
+  background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+  transition: opacity 0.3s ease;
+  filter: blur(15px);
+  opacity: 0.7;
+  animation: fadeIn 1s;
+  z-index: 0;
+}
+.joystick-container-press-up::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  height: 20%;
+  background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+  transition: opacity 0.3s ease;
+  filter: blur(15px);
+  opacity: 0.7;
+  animation: fadeIn 1s;
+  z-index: 0;
+}
+.joystick-container-press-right::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 20%;
+  height: 90%;
+  background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+  transition: opacity 0.3s ease;
+  filter: blur(15px);
+  opacity: 0.7;
+  animation: fadeIn 1s;
+  z-index: 0;
+}
+.joystick-container-press-left::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 20%;
+  height: 90%;
+  background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+  transition: opacity 0.3s ease;
+  filter: blur(15px);
+  opacity: 0.7;
+  animation: fadeIn 1s;
+  z-index: 0;
+}
+
+.joystick-button.pressed {
+  box-shadow: none;
+  transform: scale(0.9);
+}
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+.joystick-button:nth-child(1) {
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+} /* Up */
+.joystick-button:nth-child(2) {
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+} /* Left */
+.joystick-button:nth-child(3) {
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+} /* Right */
+.joystick-button:nth-child(4) {
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+} /* Down */

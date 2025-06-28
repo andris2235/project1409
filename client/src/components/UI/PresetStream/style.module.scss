@@ -1,0 +1,35 @@
+.wrapper{
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.firstPresetItem{
+  width: 50%;
+  height: 50%;
+}
+
+.fullPresetItem{
+  width: 100%;
+  height: 100%;
+}
+
+.topRightPresetItem{
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 35%;
+    border-radius: 0px 0px 0px 12px;
+    overflow: hidden;
+}
+.bottomRightPresetItem{
+  position: absolute;
+  right: 0;
+  bottom: -6px;
+  width: 35%;
+    border-radius: 12px 0px 0px 0px;
+    overflow: hidden;
+}
