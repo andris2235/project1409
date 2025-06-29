@@ -26,3 +26,7 @@ export const handlerAxiosError = (error: unknown) => {
     return "Произошла непредвиденная ошибка";
   }
 };
+
+export async function sleep(timeout: number) {
+  return await new Promise((res) => setTimeout(res, timeout));
+}

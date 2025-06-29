@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 
 type Props = {
   stream: MediaStream | null;
@@ -31,4 +31,4 @@ const MirrorPlayer: React.FC<Props> = ({
   );
 };
 
-export default MirrorPlayer;
+export default memo(MirrorPlayer);

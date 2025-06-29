@@ -9,14 +9,10 @@ import type { ZoomValues } from "../../types/zoom";
 import type { ClickType } from "../../types/joystik";
 import MyLoader from "../../components/UI/MyLoader";
 import notificationStore from "../../store/notificationStore";
-import { handlerAxiosError } from "../../utils/func";
-import { getStreams, getTvState } from "../../http/cameraAPI";
-const hlsStreams = [
-  "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-  "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8",
-  "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
-  "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
-];
+import { handlerAxiosError, sleep } from "../../utils/func";
+import { AnimatePresence, motion } from "framer-motion";
+// import { getStreams, getTvState } from "../../http/cameraAPI";
+
 const presets: PresetItem[] = [
   {
     text: "Эндоскоп 1, Эндоскоп 2, Большая операционная, Малая операционная",
@@ -40,6 +36,7 @@ const Home = () => {
   const [tvSwitchDisabled, setTvSwitchDisabled] = useState(false);
   const { setNotification } = notificationStore();
   const isZoomProcessing = useRef(false);
+  const [deletingPreset, setDeletingPreset] = useState<null | PresetItem>(null);
   const isPositionProcessing = useRef(false);
   const [currentPreset, setCurrentPreset] = useState({
     text: "Эндоскоп 1, Эндоскоп 2, Большая операционная, Малая операционная",
@@ -62,11 +59,17 @@ const Home = () => {
     null
   );
 
-  const setCurrentPresetHandler = (type: PresetTypes) => {
+  const setCurrentPresetHandler = async (type: PresetTypes) => {
+    const oldCurrent = { ...currentPreset };
     const current = presets.find((i) => i.type === type);
     if (!current) return;
+    // resetStreams()
+    setDeletingPreset(current);
     setCurrentPreset(current);
-    setOtherPresets(presets.filter((i) => i.type !== type));
+    await sleep(500);
+    setOtherPresets((p) =>
+      p.map((i) => (i.type === current.type ? oldCurrent : i))
+    );
   };
 
   useEffect(() => {
@@ -157,8 +160,8 @@ const Home = () => {
   const firstFetch = useCallback(async () => {
     try {
       setLoading(false);
-      await getStreams({});
-      await getTvState({});
+      // await getStreams({});
+      // await getTvState({});
     } catch (error) {
       console.log(error);
 
@@ -252,24 +255,43 @@ const Home = () => {
         </div>
       </div>
       <div className={styles.cameraBlock}>
-        <div className={styles.cameraBlock__current}>
-          <div className={styles.cameraBlock__current__hls}>
-            <PresetStream streams={hlsStreams} preset={currentPreset.type} />
-          </div>
-          <p>{currentPreset.text}</p>
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0, y: -60 }}
+            key={currentPreset.type}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.5 }}
+            className={styles.cameraBlock__current}
+          >
+            <div className={styles.cameraBlock__current__hls}>
+              <PresetStream preset={currentPreset.type} />
+            </div>
+
+            <p>{currentPreset.text}</p>
+          </motion.div>
+        </AnimatePresence>
         <div className={styles.miniCameras}>
           {otherPresets.map((i) => (
-            <div
-              onClick={() => setCurrentPresetHandler(i.type)}
+            <motion.div
               key={i.type}
+              onClick={() => setCurrentPresetHandler(i.type)}
+              initial={
+                deletingPreset?.type === i.type
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: -40 }
+              }
+              animate={
+                deletingPreset?.type === i.type
+                  ? { opacity: 0, y: 40 }
+                  : { opacity: 1, y: 0 }
+              }
+              transition={{ duration: 0.4 }}
               className={styles.miniCameras__camera}
             >
-              <div>
-                <PresetStream streams={hlsStreams} preset={i.type} />
-              </div>
+              <div><PresetStream preset={i.type} /></div>
               <p>{i.text}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Hls from "hls.js";
+import streamStore from "../../store/streamsStore";
 
 type Props = {
   src: string;
@@ -14,12 +15,13 @@ const HlsPlayer: React.FC<Props> = ({
   controls = false,
   onStreamReady,
 }) => {
+  const { setProgress, getProgress } = streamStore();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
-
+   
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
@@ -29,8 +31,17 @@ const HlsPlayer: React.FC<Props> = ({
       hls = new Hls();
       hls.loadSource(src);
       hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        const lastTime = getProgress(src);
+        if (!isNaN(lastTime)) {
+          video.currentTime = lastTime;
+        }
+        if (autoPlay) video.play();
+      });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src;
+      video.currentTime = getProgress(src);
+      if (autoPlay) video.play();
     } else {
       console.error("HLS not supported");
       return;
@@ -52,11 +63,20 @@ const HlsPlayer: React.FC<Props> = ({
     onStreamReady(stream);
     // video.addEventListener("play", () => {
     // });
+    // const saveProgress = () => {
+    //   if (!video.paused && !video.seeking) {
+    //     setProgress(src, video.currentTime);
+    //   }
+    // };
+
 
     return () => {
+      if (video && !video.seeking) {
+        setProgress(src, video.currentTime);
+      }
       hls?.destroy();
     };
-  }, [src, onStreamReady]);
+  }, [src, onStreamReady, setProgress, getProgress, autoPlay]);
 
   return (
     <>
@@ -65,13 +85,12 @@ const HlsPlayer: React.FC<Props> = ({
         controls={controls}
         autoPlay={autoPlay}
         playsInline
+        loop
         muted
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
       <canvas ref={canvasRef} />
     </>
-
-    // <></>
   );
 };
 
