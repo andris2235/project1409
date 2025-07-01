@@ -36,12 +36,20 @@ const HlsPlayer: React.FC<Props> = ({
         if (!isNaN(lastTime)) {
           video.currentTime = lastTime;
         }
-        if (autoPlay) video.play();
+        if (autoPlay){
+          video.play().catch((err) => {
+  console.warn("Video play failed", err);
+});
+        };
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src;
       video.currentTime = getProgress(src);
-      if (autoPlay) video.play();
+      if (autoPlay){
+        video.play().catch((err) => {
+  console.warn("Video play failed", err);
+});
+      }
     } else {
       console.error("HLS not supported");
       return;
@@ -74,6 +82,7 @@ const HlsPlayer: React.FC<Props> = ({
       if (video && !video.seeking) {
         setProgress(src, video.currentTime);
       }
+      stream.getTracks().forEach((track) => track.stop());
       hls?.destroy();
     };
   }, [src, onStreamReady, setProgress, getProgress, autoPlay]);

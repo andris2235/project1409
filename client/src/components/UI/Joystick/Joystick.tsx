@@ -46,11 +46,14 @@ const Joystick = ({ isPressed, setIsPressed }: JoystickProps) => {
     }
   };
 
+  console.log(isPressed);
+  
+
   return (
     <div className={`joystick-container ${getAnimation(isPressed)}`}>
       <button
         className={`joystick-button  ${isPressed === "up" ? "pressed" : ""}`}
-        onClick={() => handleInteraction("up")}
+        // onClick={() => handleInteraction("up")}
         onTouchStart={(e) => handleTouchStart(e, "up")}
         onTouchEnd={(e) => handleTouchEnd(e, "up")}
         onMouseDown={() => handleInteraction("up")}
@@ -61,7 +64,7 @@ const Joystick = ({ isPressed, setIsPressed }: JoystickProps) => {
       </button>
       <button
         className={`joystick-button ${isPressed === "left" ? "pressed" : ""}`}
-        onClick={() => handleInteraction("left")}
+        // onClick={() => handleInteraction("left")}
         onTouchStart={(e) => handleTouchStart(e, "left")}
         onTouchEnd={(e) => handleTouchEnd(e, "left")}
         onMouseDown={() => handleInteraction("left")}
@@ -72,7 +75,7 @@ const Joystick = ({ isPressed, setIsPressed }: JoystickProps) => {
       </button>
       <button
         className={`joystick-button ${isPressed === "right" ? "pressed" : ""}`}
-        onClick={() => handleInteraction("right")}
+        // onClick={() => handleInteraction("right")}
         onTouchStart={(e) => handleTouchStart(e, "right")}
         onTouchEnd={(e) => handleTouchEnd(e, "right")}
         onMouseDown={() => handleInteraction("right")}
@@ -83,7 +86,7 @@ const Joystick = ({ isPressed, setIsPressed }: JoystickProps) => {
       </button>
       <button
         className={`joystick-button ${isPressed === "down" ? "pressed" : ""}`}
-        onClick={() => handleInteraction("down")}
+        // onClick={() => handleInteraction("down")}
         onTouchStart={(e) => handleTouchStart(e, "down")}
         onTouchEnd={(e) => handleTouchEnd(e, "down")}
         onMouseDown={() => handleInteraction("down")}
