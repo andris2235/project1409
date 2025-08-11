@@ -18,7 +18,7 @@ class StreamControllers {
   async moveCamera(req: Request, res: Response, next: NextFunction) {
     const { cam } = req.params;
     const { x, y, z } = req.body;
-    if (!cam || !z || !x || !y) {
+    if (!cam || typeof z !== "number" || typeof x !== "number" || typeof y !== "number") {
       return next(ApiError.badRequest("Incomplete data"));
     }
     const { success, message } = await onvifController.moveCamera(cam, x, y, z);

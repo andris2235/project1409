@@ -1,5 +1,5 @@
 //@ts-ignore
-import Onvif, { OnvifDevice } from "node-onvif";
+import { OnvifDevice } from "node-onvif";
 import * as winston from "winston";
 import "winston-daily-rotate-file";
 import errorHandler from "../utils/erronHandler";
@@ -46,7 +46,7 @@ class OnvifController {
   }
 
   private async initCamera(config: CameraConfig): Promise<void> {
-    const device = new Onvif.OnvifDevice({
+    const device = new OnvifDevice({
       xaddr: config.xaddr,
       user: config.user,
       pass: config.pass,
@@ -70,7 +70,7 @@ class OnvifController {
     if (!device || !this.ready.get(name)) {
       const errMsg = `Камера "${name}" не готова к движению`;
       logger.error(errMsg);
-      throw new Error(errMsg);
+      return {success: false, message: errMsg}
     }
     try {
       await device.ptzMove({ speed: { x, y, z } });

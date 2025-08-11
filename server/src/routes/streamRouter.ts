@@ -17,7 +17,7 @@ router.post(
 
 router.post(
   "/camera/:cam/stop",
-  tryCatch(streamControllers.moveCamera)
+  tryCatch(streamControllers.stopCamera)
 );
 
 export default router;

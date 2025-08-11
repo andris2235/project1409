@@ -31,20 +31,24 @@ const STREAM_DIRS = STREAMS.map((_, i) => path.join(PUBLIC_DIR, `stream${i + 1}`
 startSegmentCleaner(STREAM_DIRS, 10, 5000);
 
 app.use(express.static(PUBLIC_DIR));
-
 staticFilePaths.forEach(({ route, folder }) => {
   app.use(route, express.static(folder));
 });
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
+app.use(express.static(path.join(__dirname, "..", "build")));
 const server = http.createServer(app);
 app.use(ErrorHandlingMiddleware);
+console.log(path.join(__dirname, "..", "build"));
 
 const start = async () => {
   try {
     initFunc();
     server.listen(port, async () => {
       console.log(`Server is running on port ${port}`);
+    });
+        app.get("*", async (req, res) => {
+      res.sendFile(path.join(__dirname,"..", "build", "index.html"));
     });
   } catch (error) {
     console.log(error);
