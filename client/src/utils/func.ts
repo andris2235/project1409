@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { ClickType } from "../types/joystik";
 
 export const buildQueryParams = (params: QueryType) => {
   const queryParams = [];
@@ -29,4 +30,19 @@ export const handlerAxiosError = (error: unknown) => {
 
 export async function sleep(timeout: number) {
   return await new Promise((res) => setTimeout(res, timeout));
+}
+
+export function getCameraDelta(direction: ClickType) {
+  switch (direction) {
+    case "up":
+      return { x: 0, y: 0.5, z: 0 };
+    case "down":
+      return { x: 0, y: -0.5, z: 0 };
+    case "left":
+      return { x: -0.5, y: 0, z: 0 };
+    case "right":
+      return { x: 0.5, y: 0, z: 0 };
+    default:
+      return { x: 0, y: 0, z: 0 };
+  }
 }

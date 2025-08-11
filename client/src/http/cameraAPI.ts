@@ -20,8 +20,13 @@ export const setTvState = async (item: SetTvStateBody) => {
   return data;
 };
 
-export const setCameraZoom = async (item: SetCameraZoomBody) => {
-  const { data } = await $host.post("api/admin/user", item);
+export const moveCamera = async (item: SetCameraZoomBody, cam: "cam1" | "cam2") => {
+  const { data } = await $host.post(`api/stream/camera/${cam}/move`, item);
+  return data;
+};
+
+export const stopCamera = async (cam: "cam1" | "cam2") => {
+  const { data } = await $host.post(`api/stream/camera/${cam}/stop`);
   return data;
 };
 

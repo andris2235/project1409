@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ZoomControl from "../../components/UI/CameraZoom/ZoomControl";
 import Joystick from "../../components/UI/Joystick/Joystick";
 import PresetStream from "../../components/UI/PresetStream/PresetStream";
@@ -7,10 +7,11 @@ import { PresetTypes, type PresetItem } from "../../types/stream";
 import styles from "./style.module.scss";
 import type { ZoomValues } from "../../types/zoom";
 import type { ClickType } from "../../types/joystik";
-import MyLoader from "../../components/UI/MyLoader";
+// import MyLoader from "../../components/UI/MyLoader";
 import notificationStore from "../../store/notificationStore";
-import { handlerAxiosError, sleep } from "../../utils/func";
+import { getCameraDelta, handlerAxiosError, sleep } from "../../utils/func";
 import { AnimatePresence, motion } from "framer-motion";
+import { moveCamera, stopCamera } from "../../http/cameraAPI";
 // import { getStreams, getTvState } from "../../http/cameraAPI";
 
 const presets: PresetItem[] = [
@@ -32,12 +33,12 @@ const presets: PresetItem[] = [
   },
 ];
 const Home = () => {
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [tvSwitchDisabled, setTvSwitchDisabled] = useState(false);
   const { setNotification } = notificationStore();
-  const isZoomProcessing = useRef(false);
+  // const isZoomProcessing = useRef(false);
   const [deletingPreset, setDeletingPreset] = useState<null | PresetItem>(null);
-  const isPositionProcessing = useRef(false);
+  // const isPositionProcessing = useRef(false);
   const [currentPreset, setCurrentPreset] = useState({
     text: "Эндоскоп 1, Эндоскоп 2, Большая операционная, Малая операционная",
     type: PresetTypes.first,
@@ -54,10 +55,10 @@ const Home = () => {
   const [largeOperationIsPressed, setLargeOperationIsPressed] =
     useState<null | ClickType>(null);
   const [tvIsOn, setTvIsOn] = useState(false);
-  const zoomIntervalId = useRef<ReturnType<typeof setInterval> | null>(null);
-  const positionIntervalId = useRef<ReturnType<typeof setInterval> | null>(
-    null
-  );
+  // const zoomIntervalId = useRef<ReturnType<typeof setInterval> | null>(null);
+  // const positionIntervalId = useRef<ReturnType<typeof setInterval> | null>(
+  //   null
+  // );
 
   const setCurrentPresetHandler = async (type: PresetTypes) => {
     const oldCurrent = { ...currentPreset };
@@ -72,73 +73,134 @@ const Home = () => {
     );
   };
 
-  useEffect(() => {
-    zoomIntervalId.current = setInterval(async () => {
+  // useEffect(() => {
+  //   zoomIntervalId.current = setInterval(async () => {
+  //     try {
+  //       if (isZoomProcessing.current) return;
+
+  //       // Обработка small
+  //       if (smallOperationZoom !== "neutral") {
+  //         isZoomProcessing.current = true;
+  //         console.log("Обработка small:", smallOperationZoom);
+  //         isZoomProcessing.current = false;
+  //         return; // ждём следующего тика, чтобы large пошёл строго после
+  //       }
+
+  //       // Обработка large
+  //       if (largeOperationZoom !== "neutral") {
+  //         isZoomProcessing.current = true;
+  //         console.log("Обработка large:", largeOperationZoom);
+  //         isZoomProcessing.current = false;
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //       setNotification({
+  //         visible: true,
+  //         type: "error",
+  //         text: handlerAxiosError(error),
+  //       });
+  //     }
+  //   }, 500);
+
+  //   return () => {
+  //     if (zoomIntervalId.current) clearInterval(zoomIntervalId.current);
+  //   };
+  // }, [smallOperationZoom, largeOperationZoom, setNotification]);
+  console.log("smallOperationZoom", smallOperationZoom);
+  console.log("largeOperationZoom", largeOperationZoom);
+  console.log("smallOperationIsPressed", smallOperationIsPressed);
+  console.log("largeOperationIsPressed", largeOperationIsPressed);
+
+  const cameraZoomHandler = useCallback(
+    async (zoom: ZoomValues, cam: "cam1" | "cam2") => {
       try {
-        if (isZoomProcessing.current) return;
-
-        // Обработка small
-        if (smallOperationZoom !== "neutral") {
-          isZoomProcessing.current = true;
-          console.log("Обработка small:", smallOperationZoom);
-          isZoomProcessing.current = false;
-          return; // ждём следующего тика, чтобы large пошёл строго после
-        }
-
-        // Обработка large
-        if (largeOperationZoom !== "neutral") {
-          isZoomProcessing.current = true;
-          console.log("Обработка large:", largeOperationZoom);
-          isZoomProcessing.current = false;
+        if (zoom === "neutral") {
+          await stopCamera(cam);
+        } else {
+          await moveCamera(
+            { x: 0, y: zoom === "down" ? -0.5 : 0.5, z: 0 },
+            cam
+          );
         }
       } catch (error) {
         console.log(error);
         setNotification({
-          visible: true,
-          type: "error",
           text: handlerAxiosError(error),
+          type: "error",
+          visible: true,
         });
       }
-    }, 500);
+    },
+    [setNotification]
+  );
 
-    return () => {
-      if (zoomIntervalId.current) clearInterval(zoomIntervalId.current);
-    };
-  }, [smallOperationZoom, largeOperationZoom, setNotification]);
-
-  useEffect(() => {
-    positionIntervalId.current = setInterval(async () => {
+  const cameraMoveHandler = useCallback(
+    async (pressed: ClickType | null, cam: "cam1" | "cam2") => {
       try {
-        if (isPositionProcessing.current) return;
-
-        // Обработка small
-        if (smallOperationIsPressed) {
-          isPositionProcessing.current = true;
-          console.log("Обработка small:", smallOperationIsPressed);
-          isPositionProcessing.current = false;
-          return; // ждём следующего тика, чтобы large пошёл строго после
-        }
-
-        // Обработка large
-        if (largeOperationIsPressed) {
-          isPositionProcessing.current = true;
-          console.log("Обработка large:", largeOperationIsPressed);
-          isPositionProcessing.current = false;
+        if (!pressed) {
+          await stopCamera(cam);
+        } else {
+          await moveCamera(getCameraDelta(pressed), cam);
         }
       } catch (error) {
         console.log(error);
         setNotification({
-          visible: true,
-          type: "error",
           text: handlerAxiosError(error),
+          type: "error",
+          visible: true,
         });
       }
-    }, 500);
+    },
+    [setNotification]
+  );
 
-    return () => {
-      if (positionIntervalId.current) clearInterval(positionIntervalId.current);
-    };
-  }, [largeOperationIsPressed, smallOperationIsPressed, setNotification]);
+  useEffect(() => {
+    cameraZoomHandler(smallOperationZoom, "cam1");
+  }, [smallOperationZoom, cameraZoomHandler]);
+  useEffect(() => {
+    cameraZoomHandler(largeOperationZoom, "cam2");
+  }, [largeOperationZoom, cameraZoomHandler]);
+
+  useEffect(() => {
+    cameraMoveHandler(smallOperationIsPressed, "cam1");
+  }, [smallOperationIsPressed, cameraMoveHandler]);
+  useEffect(() => {
+    cameraMoveHandler(largeOperationIsPressed, "cam2");
+  }, [largeOperationIsPressed, cameraMoveHandler]);
+
+  // useEffect(() => {
+  //   positionIntervalId.current = setInterval(async () => {
+  //     try {
+  //       if (isPositionProcessing.current) return;
+
+  //       // Обработка small
+  //       if (smallOperationIsPressed) {
+  //         isPositionProcessing.current = true;
+  //         console.log("Обработка small:", smallOperationIsPressed);
+  //         isPositionProcessing.current = false;
+  //         return; // ждём следующего тика, чтобы large пошёл строго после
+  //       }
+
+  //       // Обработка large
+  //       if (largeOperationIsPressed) {
+  //         isPositionProcessing.current = true;
+  //         console.log("Обработка large:", largeOperationIsPressed);
+  //         isPositionProcessing.current = false;
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //       setNotification({
+  //         visible: true,
+  //         type: "error",
+  //         text: handlerAxiosError(error),
+  //       });
+  //     }
+  //   }, 500);
+
+  //   return () => {
+  //     if (positionIntervalId.current) clearInterval(positionIntervalId.current);
+  //   };
+  // }, [largeOperationIsPressed, smallOperationIsPressed, setNotification]);
 
   const setTvValueHandler = useCallback(
     async (v: boolean) => {
@@ -157,31 +219,31 @@ const Home = () => {
     [setNotification]
   );
 
-  const firstFetch = useCallback(async () => {
-    try {
-      setLoading(false);
-      // await getStreams({});
-      // await getTvState({});
-    } catch (error) {
-      console.log(error);
+  // const firstFetch = useCallback(async () => {
+  //   try {
+  //     setLoading(false);
+  //     // await getStreams({});
+  //     // await getTvState({});
+  //   } catch (error) {
+  //     console.log(error);
 
-      setNotification({
-        visible: true,
-        type: "error",
-        text: handlerAxiosError(error),
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [setNotification]);
+  //     setNotification({
+  //       visible: true,
+  //       type: "error",
+  //       text: handlerAxiosError(error),
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [setNotification]);
 
-  useEffect(() => {
-    firstFetch();
-  }, [firstFetch]);
+  // useEffect(() => {
+  //   firstFetch();
+  // }, [firstFetch]);
 
-  if (loading) {
-    return <MyLoader />;
-  }
+  // if (loading) {
+  //   return <MyLoader />;
+  // }
 
   return (
     <div className={styles.wrapper}>
@@ -289,7 +351,9 @@ const Home = () => {
               transition={{ duration: 0.4 }}
               className={styles.miniCameras__camera}
             >
-              <div><PresetStream preset={i.type} /></div>
+              <div>
+                <PresetStream preset={i.type} />
+              </div>
               <p>{i.text}</p>
             </motion.div>
           ))}

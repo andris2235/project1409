@@ -10,8 +10,9 @@ export interface SetTvStateBody{
 }
 
 export interface SetCameraZoomBody{
-  increase: boolean
-  cameraType: CameraTypes
+x: number,
+y: number,
+z: number
 }
 
 export interface SetCameraPositionBody{
