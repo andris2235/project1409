@@ -11,7 +11,7 @@ import type { ClickType } from "../../types/joystik";
 import notificationStore from "../../store/notificationStore";
 import { getCameraDelta, handlerAxiosError, sleep } from "../../utils/func";
 import { AnimatePresence, motion } from "framer-motion";
-import { moveCamera, stopCamera } from "../../http/cameraAPI";
+import { moveCamera, setPreset, stopCamera } from "../../http/cameraAPI";
 // import { getStreams, getTvState } from "../../http/cameraAPI";
 
 const presets: PresetItem[] = [
@@ -36,9 +36,7 @@ const Home = () => {
   // const [loading, setLoading] = useState(true);
   const [tvSwitchDisabled, setTvSwitchDisabled] = useState(false);
   const { setNotification } = notificationStore();
-  // const isZoomProcessing = useRef(false);
   const [deletingPreset, setDeletingPreset] = useState<null | PresetItem>(null);
-  // const isPositionProcessing = useRef(false);
   const [currentPreset, setCurrentPreset] = useState({
     text: "Эндоскоп 1, Эндоскоп 2, Большая операционная, Малая операционная",
     type: PresetTypes.first,
@@ -55,10 +53,6 @@ const Home = () => {
   const [largeOperationIsPressed, setLargeOperationIsPressed] =
     useState<null | ClickType>(null);
   const [tvIsOn, setTvIsOn] = useState(false);
-  // const zoomIntervalId = useRef<ReturnType<typeof setInterval> | null>(null);
-  // const positionIntervalId = useRef<ReturnType<typeof setInterval> | null>(
-  //   null
-  // );
 
   const setCurrentPresetHandler = async (type: PresetTypes) => {
     const oldCurrent = { ...currentPreset };
@@ -73,43 +67,22 @@ const Home = () => {
     );
   };
 
-  // useEffect(() => {
-  //   zoomIntervalId.current = setInterval(async () => {
-  //     try {
-  //       if (isZoomProcessing.current) return;
+  const setPresetHandler = useCallback(async () => {
+    try {
+      await setPreset(currentPreset.type);
+    } catch (error) {
+      console.log(error);
+      setNotification({
+        text: handlerAxiosError(error),
+        type: "error",
+        visible: true,
+      });
+    }
+  }, [setNotification, currentPreset]);
 
-  //       // Обработка small
-  //       if (smallOperationZoom !== "neutral") {
-  //         isZoomProcessing.current = true;
-  //         console.log("Обработка small:", smallOperationZoom);
-  //         isZoomProcessing.current = false;
-  //         return; // ждём следующего тика, чтобы large пошёл строго после
-  //       }
-
-  //       // Обработка large
-  //       if (largeOperationZoom !== "neutral") {
-  //         isZoomProcessing.current = true;
-  //         console.log("Обработка large:", largeOperationZoom);
-  //         isZoomProcessing.current = false;
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       setNotification({
-  //         visible: true,
-  //         type: "error",
-  //         text: handlerAxiosError(error),
-  //       });
-  //     }
-  //   }, 500);
-
-  //   return () => {
-  //     if (zoomIntervalId.current) clearInterval(zoomIntervalId.current);
-  //   };
-  // }, [smallOperationZoom, largeOperationZoom, setNotification]);
-  console.log("smallOperationZoom", smallOperationZoom);
-  console.log("largeOperationZoom", largeOperationZoom);
-  console.log("smallOperationIsPressed", smallOperationIsPressed);
-  console.log("largeOperationIsPressed", largeOperationIsPressed);
+  useEffect(() => {
+    setPresetHandler()
+  }, [setPresetHandler]);
 
   const cameraZoomHandler = useCallback(
     async (zoom: ZoomValues, cam: "cam1" | "cam2") => {
@@ -118,7 +91,7 @@ const Home = () => {
           await stopCamera(cam);
         } else {
           await moveCamera(
-            { x: 0, y: zoom === "down" ? -0.5 : 0.5, z: 0 },
+            { x: 0, z: zoom === "down" ? -0.5 : 0.5, y: 0 },
             cam
           );
         }
@@ -167,41 +140,6 @@ const Home = () => {
   useEffect(() => {
     cameraMoveHandler(largeOperationIsPressed, "cam2");
   }, [largeOperationIsPressed, cameraMoveHandler]);
-
-  // useEffect(() => {
-  //   positionIntervalId.current = setInterval(async () => {
-  //     try {
-  //       if (isPositionProcessing.current) return;
-
-  //       // Обработка small
-  //       if (smallOperationIsPressed) {
-  //         isPositionProcessing.current = true;
-  //         console.log("Обработка small:", smallOperationIsPressed);
-  //         isPositionProcessing.current = false;
-  //         return; // ждём следующего тика, чтобы large пошёл строго после
-  //       }
-
-  //       // Обработка large
-  //       if (largeOperationIsPressed) {
-  //         isPositionProcessing.current = true;
-  //         console.log("Обработка large:", largeOperationIsPressed);
-  //         isPositionProcessing.current = false;
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       setNotification({
-  //         visible: true,
-  //         type: "error",
-  //         text: handlerAxiosError(error),
-  //       });
-  //     }
-  //   }, 500);
-
-  //   return () => {
-  //     if (positionIntervalId.current) clearInterval(positionIntervalId.current);
-  //   };
-  // }, [largeOperationIsPressed, smallOperationIsPressed, setNotification]);
-
   const setTvValueHandler = useCallback(
     async (v: boolean) => {
       try {
@@ -218,32 +156,6 @@ const Home = () => {
     },
     [setNotification]
   );
-
-  // const firstFetch = useCallback(async () => {
-  //   try {
-  //     setLoading(false);
-  //     // await getStreams({});
-  //     // await getTvState({});
-  //   } catch (error) {
-  //     console.log(error);
-
-  //     setNotification({
-  //       visible: true,
-  //       type: "error",
-  //       text: handlerAxiosError(error),
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, [setNotification]);
-
-  // useEffect(() => {
-  //   firstFetch();
-  // }, [firstFetch]);
-
-  // if (loading) {
-  //   return <MyLoader />;
-  // }
 
   return (
     <div className={styles.wrapper}>

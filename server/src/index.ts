@@ -8,25 +8,32 @@ import ErrorHandlingMiddleware from "./middleware/ErrorHandlingMiddleware";
 import router from "./routes";
 import { staticFilePaths } from "./utils/filePathConsts";
 import { initFunc } from "./service/initFunctions";
-import * as path from 'path';
-import * as os from 'os';
+import * as path from "path";
+import * as os from "os";
 import { createStream, startSegmentCleaner } from "./service/createStream";
 const app: Express = express();
 const port: number = parseInt(process.env.PORT || "8080", 10);
 
 app.use(cors());
 app.use(express.json());
-const PUBLIC_DIR = path.join(__dirname, 'public');
+const PUBLIC_DIR = path.join(__dirname, "public");
 const STREAMS =
-    os.platform() === 'darwin'
-        ? [0, 1, 2, 3] // macOS: индексы устройств avfoundation
-        : ['/dev/video0', '/dev/video1', '/dev/video2', '/dev/video3'];
+  os.platform() === "darwin"
+    ? [0, 1, 2, 3] // macOS: индексы устройств avfoundation
+    : ["/dev/video0", "/dev/video1", "/dev/video2", "/dev/video3"];
 
 STREAMS.forEach((_, index) =>
-    createStream(app, { index, deviceId: index, publicDir: PUBLIC_DIR, streamsList: STREAMS })
+  createStream(app, {
+    index,
+    deviceId: index,
+    publicDir: PUBLIC_DIR,
+    streamsList: STREAMS,
+  })
 );
 
-const STREAM_DIRS = STREAMS.map((_, i) => path.join(PUBLIC_DIR, `stream${i + 1}`));
+const STREAM_DIRS = STREAMS.map((_, i) =>
+  path.join(PUBLIC_DIR, `stream${i + 1}`)
+);
 
 startSegmentCleaner(STREAM_DIRS, 10, 5000);
 
@@ -39,7 +46,6 @@ app.use("/api", router);
 app.use(express.static(path.join(__dirname, "..", "build")));
 const server = http.createServer(app);
 app.use(ErrorHandlingMiddleware);
-console.log(path.join(__dirname, "..", "build"));
 
 const start = async () => {
   try {
@@ -47,8 +53,8 @@ const start = async () => {
     server.listen(port, async () => {
       console.log(`Server is running on port ${port}`);
     });
-        app.get("*", async (req, res) => {
-      res.sendFile(path.join(__dirname,"..", "build", "index.html"));
+    app.get("*", async (req, res) => {
+      res.sendFile(path.join(__dirname, "..", "build", "index.html"));
     });
   } catch (error) {
     console.log(error);

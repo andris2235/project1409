@@ -1,12 +1,7 @@
 import { $host } from ".";
-import type { GetStreamParams, SetCameraPositionBody, SetCameraZoomBody, SetTvStateBody } from "../types/bodies/camera";
+import type { GetStreamParams, SetCameraZoomBody, SetTvStateBody } from "../types/bodies/camera";
+import type { PresetTypes } from "../types/stream";
 import { buildQueryParams } from "../utils/func";
-
-export const getStreams = async (params: GetStreamParams) => {
-  const queryParams = buildQueryParams(params);
-  const { data } = await $host.get(`api/stream?${queryParams}`);
-  return data;
-};
 
 export const getTvState = async (params: GetStreamParams) => {
   const queryParams = buildQueryParams(params);
@@ -30,7 +25,7 @@ export const stopCamera = async (cam: "cam1" | "cam2") => {
   return data;
 };
 
-export const setCameraPosition = async (item: SetCameraPositionBody) => {
-  const { data } = await $host.post("api/admin/user", item);
+export const setPreset = async (preset: PresetTypes) => {
+  const { data } = await $host.post(`api/stream/preset/${preset}`);
   return data;
 };
