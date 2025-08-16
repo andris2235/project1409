@@ -18,6 +18,7 @@ const MirrorPlayer: React.FC<Props> = ({
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
+  // if (!stream) return
 
   return (
     <video

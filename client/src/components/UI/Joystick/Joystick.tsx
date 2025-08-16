@@ -46,8 +46,6 @@ const Joystick = ({ isPressed, setIsPressed }: JoystickProps) => {
     }
   };
 
-  console.log(isPressed);
-  
 
   return (
     <div className={`joystick-container ${getAnimation(isPressed)}`}>

@@ -1,17 +1,11 @@
 import { $host } from ".";
-import type { GetStreamParams, SetCameraZoomBody, SetTvStateBody } from "../types/bodies/camera";
+import type { SetCameraZoomBody } from "../types/bodies/camera";
 import type { PresetTypes } from "../types/stream";
-import { buildQueryParams } from "../utils/func";
-
-export const getTvState = async (params: GetStreamParams) => {
-  const queryParams = buildQueryParams(params);
-  const { data } = await $host.get(`api/stream?${queryParams}`);
-  return data;
-};
+import type { TvState } from "../types/tv";
 
 
-export const setTvState = async (item: SetTvStateBody) => {
-  const { data } = await $host.post("api/admin/user", item);
+export const setTvState = async (item: TvState) => {
+  const { data } = await $host.post(`api/stream/tv/${item}`);
   return data;
 };
 

@@ -11,6 +11,11 @@ router.post(
 );
 
 router.post(
+  "/tv/:state",
+  tryCatch(streamControllers.setTv)
+);
+
+router.post(
   "/camera/:cam/move",
   tryCatch(streamControllers.moveCamera)
 );

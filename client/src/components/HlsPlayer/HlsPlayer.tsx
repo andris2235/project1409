@@ -21,7 +21,7 @@ const HlsPlayer: React.FC<Props> = ({
 
   useEffect(() => {
     const video = videoRef.current;
-   
+
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
@@ -36,19 +36,19 @@ const HlsPlayer: React.FC<Props> = ({
         if (!isNaN(lastTime)) {
           video.currentTime = lastTime;
         }
-        if (autoPlay){
+        if (autoPlay) {
           video.play().catch((err) => {
-  console.warn("Video play failed", err);
-});
-        };
+            console.warn("Video play failed", err);
+          });
+        }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src;
       video.currentTime = getProgress(src);
-      if (autoPlay){
+      if (autoPlay) {
         video.play().catch((err) => {
-  console.warn("Video play failed", err);
-});
+          console.warn("Video play failed", err);
+        });
       }
     } else {
       console.error("HLS not supported");
@@ -76,7 +76,6 @@ const HlsPlayer: React.FC<Props> = ({
     //     setProgress(src, video.currentTime);
     //   }
     // };
-
 
     return () => {
       if (video && !video.seeking) {

@@ -7,12 +7,10 @@ import { PresetTypes, type PresetItem } from "../../types/stream";
 import styles from "./style.module.scss";
 import type { ZoomValues } from "../../types/zoom";
 import type { ClickType } from "../../types/joystik";
-// import MyLoader from "../../components/UI/MyLoader";
 import notificationStore from "../../store/notificationStore";
 import { getCameraDelta, handlerAxiosError, sleep } from "../../utils/func";
 import { AnimatePresence, motion } from "framer-motion";
-import { moveCamera, setPreset, stopCamera } from "../../http/cameraAPI";
-// import { getStreams, getTvState } from "../../http/cameraAPI";
+import { moveCamera, setPreset, setTvState, stopCamera } from "../../http/cameraAPI";
 
 const presets: PresetItem[] = [
   {
@@ -33,7 +31,6 @@ const presets: PresetItem[] = [
   },
 ];
 const Home = () => {
-  // const [loading, setLoading] = useState(true);
   const [tvSwitchDisabled, setTvSwitchDisabled] = useState(false);
   const { setNotification } = notificationStore();
   const [deletingPreset, setDeletingPreset] = useState<null | PresetItem>(null);
@@ -144,6 +141,7 @@ const Home = () => {
     async (v: boolean) => {
       try {
         setTvSwitchDisabled(true);
+        await setTvState(v ? "on" : "off")
         setTvIsOn(v);
         setTvSwitchDisabled(false);
       } catch (error) {
@@ -156,6 +154,10 @@ const Home = () => {
     },
     [setNotification]
   );
+
+  useEffect(()=>{
+    setTvValueHandler(true)
+  }, [setTvValueHandler])
 
   return (
     <div className={styles.wrapper}>
