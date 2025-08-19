@@ -97,7 +97,7 @@ const HlsPlayer: React.FC<Props> = ({
         muted
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
-      <canvas ref={canvasRef} />
+      <canvas style={{opacity: 0}} ref={canvasRef} />
     </>
   );
 };
