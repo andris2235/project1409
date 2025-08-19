@@ -2,6 +2,7 @@ import { create } from "zustand";
 export interface MirrorStream {
   mirrorStreeam: MediaStream;
   src: string;
+  key: string
 }
 interface StreamStoreType {
   mirrorStreams: MirrorStream[];

@@ -4,25 +4,25 @@ import styles from "./style.module.scss";
 import streamStore from "../../../store/streamsStore";
 import { baseURL } from "../../../http";
 const hlsStreams = [
-  `${baseURL}stream1/index.m3u8`,
-  `${baseURL}stream2/index.m3u8`,
-  `${baseURL}stream3/index.m3u8`,
-  `${baseURL}stream4/index.m3u8`,
+  {url: `${baseURL}stream1/index.m3u8`, key: "console_big"},
+  {url: `${baseURL}stream2/index.m3u8`, key: "console_small"},
+  {url: `${baseURL}stream3/index.m3u8`, key: "Ptz_big"},
+  {url: `${baseURL}stream4/index.m3u8`, key: "Ptz_small"},
 ];
 const MainPreset = () => {
 const setMirrorStreams = streamStore(state => state.setMirrorStreams);
 
   const setMirrorStreamsHandler = useCallback(
-    (stream: MediaStream, src: string) => {     
-      setMirrorStreams({mirrorStreeam: stream, src});
+    (stream: MediaStream, src: string, key: string) => {     
+      setMirrorStreams({mirrorStreeam: stream, src, key});
     },
     [setMirrorStreams]
   );
  
   
   return hlsStreams.map((i) => (
-    <div className={styles.firstPresetItem} key={i}>
-      <HlsPlayer onStreamReady={(s)=>setMirrorStreamsHandler(s, i)} src={i} />
+    <div className={styles.firstPresetItem} key={i.key}>
+      <HlsPlayer onStreamReady={(s)=>setMirrorStreamsHandler(s, i.url, i.key)} src={i.url} />
     </div>
   ));
 };

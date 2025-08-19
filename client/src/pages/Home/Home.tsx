@@ -143,13 +143,14 @@ const Home = () => {
         setTvSwitchDisabled(true);
         await setTvState(v ? "on" : "off")
         setTvIsOn(v);
-        setTvSwitchDisabled(false);
       } catch (error) {
         setNotification({
           visible: true,
           type: "error",
           text: handlerAxiosError(error),
         });
+      } finally{
+        setTvSwitchDisabled(false)
       }
     },
     [setNotification]
@@ -157,6 +158,9 @@ const Home = () => {
 
   useEffect(()=>{
     setTvValueHandler(true)
+    return ()=>{
+      setTvValueHandler(false)
+    }
   }, [setTvValueHandler])
 
   return (

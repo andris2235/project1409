@@ -123,9 +123,9 @@ export function createStream(app: Express, config: StreamConfig): void {
     // Запуск ffmpeg
     const ffmpeg = spawn("ffmpeg", ffmpegArgs);
 
-    // ffmpeg.stderr.on("data", (data) => {
-    //   console.log(`Stream${config.index + 1}: ${data.toString()}`);
-    // });
+    ffmpeg.stderr.on("data", (data) => {
+      console.log(`Stream${config.index + 1}: ${data.toString()}`);
+    });
 
     ffmpeg.on("exit", (code) => {
       logger.info(`Stream${config.index + 1} ffmpeg exited with code ${code}`);

@@ -10,36 +10,48 @@ const MirrorStreams = ({ preset }: PresetStreamProps) => {
   const { mirrorStreams } = streamStore();
 
   const content = useMemo(() => {
-    if (preset === PresetTypes.second || preset === PresetTypes.third) {
-      const firstStream = mirrorStreams[0];
-      const secondStream = mirrorStreams[1];
-      if (!firstStream || !secondStream) return;
+    if (preset === PresetTypes.second) {
+      const firstStream = mirrorStreams.find((i) => i.key === "console_big");
+      const secondStream = mirrorStreams.find((i) => i.key === "Ptz_big");
       return (
         <>
-          <div className={styles.fullPresetItem}>
+          {firstStream && <div className={styles.fullPresetItem}>
             <MirrorPlayer stream={firstStream.mirrorStreeam} />
-          </div>
-          <div className={styles.topRightPresetItem}>
+          </div>}
+          {secondStream && <div className={styles.topRightPresetItem}>
             <MirrorPlayer stream={secondStream.mirrorStreeam} />
-          </div>
+          </div>}
+        </>
+      );
+    } else if (preset === PresetTypes.third) {
+      const firstStream = mirrorStreams.find((i) => i.key === "console_small");
+      const secondStream = mirrorStreams.find((i) => i.key === "Ptz_small");
+      return (
+        <>
+          {firstStream && <div className={styles.fullPresetItem}>
+            <MirrorPlayer stream={firstStream.mirrorStreeam} />
+          </div>}
+          {secondStream && <div className={styles.topRightPresetItem}>
+            <MirrorPlayer stream={secondStream.mirrorStreeam} />
+          </div>}
         </>
       );
     } else {
-      const firstStream = mirrorStreams[0];
-      const secondStream = mirrorStreams[1];
-      const thirdStream = mirrorStreams[2];
+      const firstStream = mirrorStreams.find((i) => i.key === "console_big");
+      const secondStream = mirrorStreams.find((i) => i.key === "Ptz_big");
       return (
-        <>
-          <div className={styles.fullPresetItem}>
-            <MirrorPlayer stream={firstStream?.mirrorStreeam} />
-          </div>
-          <div className={styles.topRightPresetItem}>
-            <MirrorPlayer stream={secondStream?.mirrorStreeam} />
-          </div>
-          <div className={styles.bottomRightPresetItem}>
-            <MirrorPlayer stream={thirdStream?.mirrorStreeam} />
-          </div>
-        </>
+        <div className={styles.fourPresetWrapper}>
+          {firstStream && (
+            <div className={styles.fourPresetItem}>
+              <MirrorPlayer stream={firstStream?.mirrorStreeam} />
+            </div>
+          )}
+          {secondStream && (
+            <div className={styles.fourPresetItem}>
+              <MirrorPlayer stream={secondStream?.mirrorStreeam} />
+            </div>
+          )}
+        </div>
       );
     }
   }, [preset, mirrorStreams]);

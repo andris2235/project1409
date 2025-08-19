@@ -20,7 +20,7 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 const STREAMS =
   os.platform() === "darwin"
     ? [0, 1, 2, 3] // macOS: индексы устройств avfoundation
-    : ["/dev/video0", "/dev/video1", "/dev/video2", "/dev/video3"];
+    : ["/dev/console_big", "/dev/console_small", "/dev/Ptz_big", "/dev/Ptz_small"];
 
 STREAMS.forEach((_, index) =>
   createStream(app, {
