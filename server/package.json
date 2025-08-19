@@ -17,6 +17,7 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "node-onvif": "^0.1.7",
+    "typescript": "^5.9.2",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

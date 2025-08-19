@@ -50,8 +50,10 @@ function getFFmpegInputArgs(deviceId: number | string): string[] {
     return [
       "-f",
       "v4l2",
+      "-thread_queue_size",
+      "512",
       "-framerate",
-      "15",
+      "10",
       "-video_size",
       "640x480",
       "-i",
