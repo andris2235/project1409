@@ -32,7 +32,7 @@ export interface StreamConfig {
 
 function getFFmpegInputArgs(deviceId: number | string): string[] {
   const platform = os.platform();
-
+  const isPtz = deviceId === "/dev/Ptz_big" || "/dev/Ptz_small";
   if (platform === "darwin") {
     // macOS (avfoundation)
     return [
@@ -50,12 +50,14 @@ function getFFmpegInputArgs(deviceId: number | string): string[] {
     return [
       "-f",
       "v4l2",
+      "-framerate",
+      "15",
+      "-video_size",
+      "640x360",
+      "input_format",
+      isPtz ? "h264" : "yuyv422",
       "-thread_queue_size",
       "512",
-      "-framerate",
-      "10",
-      "-video_size",
-      "640x480",
       "-i",
       `${deviceId}`,
     ];

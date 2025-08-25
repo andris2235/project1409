@@ -22,7 +22,7 @@ const STREAMS =
     ? [0, 1, 2, 3] // macOS: индексы устройств avfoundation
     : ["/dev/console_big", "/dev/console_small", "/dev/Ptz_big", "/dev/Ptz_small"];
 
-STREAMS.forEach((_, index) =>
+STREAMS.forEach((i, index) =>
   createStream(app, {
     index,
     deviceId: index,
@@ -43,7 +43,7 @@ staticFilePaths.forEach(({ route, folder }) => {
 });
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
-app.use(express.static(path.join(__dirname, "..", "build")));
+app.use(express.static(path.join(__dirname, "build")));
 const server = http.createServer(app);
 app.use(ErrorHandlingMiddleware);
 
@@ -54,7 +54,7 @@ const start = async () => {
       console.log(`Server is running on port ${port}`);
     });
     app.get("*", async (req, res) => {
-      res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+      res.sendFile(path.join(__dirname, "build", "index.html"));
     });
   } catch (error) {
     console.log(error);
