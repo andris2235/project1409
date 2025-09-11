@@ -21,10 +21,14 @@ const setMirrorStreams = streamStore(state => state.setMirrorStreams);
  
   
   return hlsStreams.map((i) => (
-    <div className={styles.firstPresetItem} key={i.key}>
-      <HlsPlayer onStreamReady={(s)=>setMirrorStreamsHandler(s, i.url, i.key)} src={i.url} />
-    </div>
-  ));
+  <div className={styles.firstPresetItem} key={i.key}>
+    <HlsPlayer 
+      onStreamReady={(s)=>setMirrorStreamsHandler(s, i.url, i.key)} 
+      src={i.url}
+      streamKey={i.key} //  ДОБАВИЛИ streamKey для различных подстановок лого
+    />
+  </div>
+));
 };
 
 export default memo(MainPreset);

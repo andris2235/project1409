@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { useHeartbeat } from "../../hooks/useHeartbeat";       //!!HeartBeat
+import { useCameraQueue } from "../../hooks/useCameraQueue";
 import ZoomControl from "../../components/UI/CameraZoom/ZoomControl";
 import Joystick from "../../components/UI/Joystick/Joystick";
 import PresetStream from "../../components/UI/PresetStream/PresetStream";
@@ -14,19 +16,19 @@ import { moveCamera, setPreset, setTvState, stopCamera } from "../../http/camera
 
 const presets: PresetItem[] = [
   {
-    text: "Эндоскоп 1, Эндоскоп 2, Большая операционная, Малая операционная",
+    text: "Большая/малая операционные Quad>",
     type: PresetTypes.first,
   },
   {
-    text: "Эндоскоп 1, Большая операционная",
+    text: "Большая операционная Preset2",
     type: PresetTypes.second,
   },
   {
-    text: "Эндоскоп 2, Малая операционная",
+    text: "Малая операционная Preset3",
     type: PresetTypes.third,
   },
   {
-    text: "Эндоскоп 1, Большая операционная, малая операционная",
+    text: "Большая операционная Preset4",
     type: PresetTypes.fourth,
   },
 ];
@@ -35,7 +37,7 @@ const Home = () => {
   const { setNotification } = notificationStore();
   const [deletingPreset, setDeletingPreset] = useState<null | PresetItem>(null);
   const [currentPreset, setCurrentPreset] = useState({
-    text: "Эндоскоп 1, Эндоскоп 2, Большая операционная, Малая операционная",
+    text: "Большая/малая операционные Quad",
     type: PresetTypes.first,
   });
   const [otherPresets, setOtherPresets] = useState<PresetItem[]>(
@@ -50,6 +52,10 @@ const Home = () => {
   const [largeOperationIsPressed, setLargeOperationIsPressed] =
     useState<null | ClickType>(null);
   const [tvIsOn, setTvIsOn] = useState(false);
+  const { isOnline, lastPing, reconnect } = useHeartbeat(15000);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!HeartBeat
+
+  const camera1Control = useCameraQueue("cam1"); //Создаем контроллеры для камер
+  const camera2Control = useCameraQueue("cam2");
 
   const setCurrentPresetHandler = async (type: PresetTypes) => {
     const oldCurrent = { ...currentPreset };
@@ -81,62 +87,19 @@ const Home = () => {
     setPresetHandler()
   }, [setPresetHandler]);
 
-  const cameraZoomHandler = useCallback(
-    async (zoom: ZoomValues, cam: "cam1" | "cam2") => {
-      try {
-        if (zoom === "neutral") {
-          await stopCamera(cam);
-        } else {
-          await moveCamera(
-            { x: 0, z: zoom === "down" ? -0.5 : 0.5, y: 0 },
-            cam
-          );
-        }
-      } catch (error) {
-        console.log(error);
-        setNotification({
-          text: handlerAxiosError(error),
-          type: "error",
-          visible: true,
-        });
-      }
-    },
-    [setNotification]
-  );
+  useEffect(() => {
+    camera1Control.handleZoom(smallOperationZoom);
+  }, [smallOperationZoom, camera1Control.handleZoom]);
+  useEffect(() => {
+    camera2Control.handleZoom(largeOperationZoom);
+  }, [largeOperationZoom, camera2Control.handleZoom]);
+  useEffect(() => {
+    camera1Control.handleMove(smallOperationIsPressed);
+  }, [smallOperationIsPressed, camera1Control.handleMove]);
+  useEffect(() => {
+    camera2Control.handleMove(largeOperationIsPressed);
+  }, [largeOperationIsPressed, camera2Control.handleMove]);
 
-  const cameraMoveHandler = useCallback(
-    async (pressed: ClickType | null, cam: "cam1" | "cam2") => {
-      try {
-        if (!pressed) {
-          await stopCamera(cam);
-        } else {
-          await moveCamera(getCameraDelta(pressed), cam);
-        }
-      } catch (error) {
-        console.log(error);
-        setNotification({
-          text: handlerAxiosError(error),
-          type: "error",
-          visible: true,
-        });
-      }
-    },
-    [setNotification]
-  );
-
-  useEffect(() => {
-    cameraZoomHandler(smallOperationZoom, "cam1");
-  }, [smallOperationZoom, cameraZoomHandler]);
-  useEffect(() => {
-    cameraZoomHandler(largeOperationZoom, "cam2");
-  }, [largeOperationZoom, cameraZoomHandler]);
-
-  useEffect(() => {
-    cameraMoveHandler(smallOperationIsPressed, "cam1");
-  }, [smallOperationIsPressed, cameraMoveHandler]);
-  useEffect(() => {
-    cameraMoveHandler(largeOperationIsPressed, "cam2");
-  }, [largeOperationIsPressed, cameraMoveHandler]);
   const setTvValueHandler = useCallback(
     async (v: boolean) => {
       try {
@@ -149,22 +112,76 @@ const Home = () => {
           type: "error",
           text: handlerAxiosError(error),
         });
-      } finally{
+      } finally {
         setTvSwitchDisabled(false)
       }
     },
     [setNotification]
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     setTvValueHandler(true)
-    return ()=>{
+    return () => {
       setTvValueHandler(false)
     }
   }, [setTvValueHandler])
 
   return (
     <div className={styles.wrapper}>
+      {/* Проверяем статус и пишем статус и соединение с сервером */}
+      <div style={{
+        position: 'fixed',
+        top: 10,
+        right: 10,
+        padding: '8px 12px',
+        backgroundColor: isOnline ? '#4CAF50' : '#f44336',
+        color: 'white',
+        borderRadius: '4px',
+        fontSize: '12px',
+        zIndex: 1000,
+        fontFamily: 'Arial, sans-serif'
+      }}>
+        {isOnline ? '🟢 Онлайн' : '🔴 Оффлайн'}
+        {lastPing && (
+          <div style={{ fontSize: '10px', marginTop: '2px' }}>
+            {lastPing.toLocaleTimeString()}
+          </div>
+        )}
+      </div>
+
+      {/* Модальное окно при потере связи */}
+      {!isOnline && (
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: 'rgba(0,0,0,0.9)',
+          color: 'white',
+          padding: '30px',
+          borderRadius: '12px',
+          textAlign: 'center',
+          zIndex: 1001,
+          minWidth: '300px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
+        }}>
+          <h3 style={{ margin: '0 0 15px 0' }}>⚠️ Потеря связи с сервером</h3>
+          <p style={{ margin: '10px 0' }}>Попытка переподключения...</p>
+          <button
+            onClick={reconnect}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#2196F3',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Переподключиться вручную
+          </button>
+        </div>
+      )}
       <div className={styles.managementBlock}>
         <div className={styles.tvManagement}>
           <div className={styles.tvManagement__left}>
