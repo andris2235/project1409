@@ -38,6 +38,8 @@ function getFFmpegInputArgs(deviceId: number | string): string[] {
     console.log(`[RTSP] Using RTSP input: ${deviceId}`);
     return [
       "-rtsp_transport", "tcp",        // TCP для надежности
+      "-fflags", "+genpts", // ✅ ИСПРАВИТЬ timing issues
+     "-avoid_negative_ts", "make_zero", // ✅ ИСПРАВИТЬ negative timestamps
       "-i", `${deviceId}`,             // RTSP URL
     ];
   }
@@ -260,8 +262,8 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
 
 export function startSegmentCleaner(
   streamDirs: string[],
-  maxSegments: number,
-  intervalMs: number
+  maxSegments: number = 15, // ← УВЕЛИЧИТЬ с 10 до 15
+  intervalMs: number = 10000 // ← УВЕЛИЧИТЬ с 5000 до 10000 (10 сек)
 ): void {
   try {
     setInterval(() => {
@@ -274,25 +276,32 @@ export function startSegmentCleaner(
 
           const segments = files
             .filter((file) => /^segment\d+\.m4s$/.test(file))
+            .map(file => ({
+              name: file,
+              // ✅ ДОБАВИТЬ проверку времени создания файла
+              stats: fs.statSync(path.join(STREAM_PATH, file))
+            }))
             .sort((a, b) => {
-              const numA = parseInt(
-                a.replace("segment", "").replace(".m4s", "")
-              );
-              const numB = parseInt(
-                b.replace("segment", "").replace(".m4s", "")
-              );
+              const numA = parseInt(a.name.replace("segment", "").replace(".m4s", ""));
+              const numB = parseInt(b.name.replace("segment", "").replace(".m4s", ""));
               return numA - numB;
             });
 
           if (segments.length > maxSegments) {
             const toDelete = segments.slice(0, segments.length - maxSegments);
-            toDelete.forEach((file) => {
-              fs.unlink(path.join(STREAM_PATH, file), (err) => {
-                if (err) {
-                  logger.error(`Ошибка удаления ${file}:`, err);
-                  console.error(`Ошибка удаления ${file}:`, err);
-                }
-              });
+            
+            toDelete.forEach((segment) => {
+              const filePath = path.join(STREAM_PATH, segment.name);
+              const fileAge = Date.now() - segment.stats.mtime.getTime();
+              
+              // ✅ КРИТИЧНО: Удаляем только файлы старше 30 секунд
+              if (fileAge > 30000) {
+                fs.unlink(filePath, (err) => {
+                  if (err && err.code !== 'ENOENT') {
+                    logger.error(`Ошибка удаления ${segment.name}:`, err);
+                  }
+                });
+              }
             });
           }
         });

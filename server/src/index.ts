@@ -70,7 +70,7 @@ const STREAM_DIRS = STREAMS.map((_, i) =>
   path.join(PUBLIC_DIR, `stream${i + 1}`)
 );
 
-startSegmentCleaner(STREAM_DIRS, 10, 5000);
+startSegmentCleaner(STREAM_DIRS, 15, 10000);
 
 app.use(express.static(PUBLIC_DIR));
 staticFilePaths.forEach(({ route, folder }) => {
