@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useHeartbeat } from "../../hooks/useHeartbeat";       //!!HeartBeat
+import { useHeartbeat } from "../../hooks/useHeartbeat"; //!!HeartBeat
 import { useCameraQueue } from "../../hooks/useCameraQueue";
 import ZoomControl from "../../components/UI/CameraZoom/ZoomControl";
 import Joystick from "../../components/UI/Joystick/Joystick";
@@ -17,17 +17,42 @@ import { setPreset, setTvState } from "../../http/cameraAPI";
 // Вместо <img src="/icons/desktop.png" alt="Desktop" />
 // создайте React-компонент:
 const DesktopIcon = () => (
-  <svg width="24" height="24"    viewBox="0 0 24 24"    fill="none"    xmlns="http://www.w3.org/2000/svg" >
-    <path   fillRule="evenodd"      clipRule="evenodd"    d="M18 3H6C3.79086 3 2 4.79086 2 7V15C2 17.2091 3.79086 19 6 19H18C20.2091 19 22 17.2091 22 15V7C22 4.79086 20.2091 3 18 3ZM6 4.5H18C19.3807 4.5 20.5 5.61929 20.5 7V15C20.5 16.3807 19.3807 17.5 18 17.5H6C4.61929 17.5 3.5 16.3807 3.5 15V7C3.5 5.61929 4.61929 4.5 6 4.5Z"
-      fill="#363538"  />
-    <path      d="M10 19.25C9.58579 19.25 9.25 19.5858 9.25 20C9.25 20.4142 9.58579 20.75 10 20.75H14C14.4142 20.75 14.75 20.4142 14.75 20C14.75 19.5858 14.4142 19.25 14 19.25H10Z"
-      fill="#363538"  /> </svg>
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M18 3H6C3.79086 3 2 4.79086 2 7V15C2 17.2091 3.79086 19 6 19H18C20.2091 19 22 17.2091 22 15V7C22 4.79086 20.2091 3 18 3ZM6 4.5H18C19.3807 4.5 20.5 5.61929 20.5 7V15C20.5 16.3807 19.3807 17.5 18 17.5H6C4.61929 17.5 3.5 16.3807 3.5 15V7C3.5 5.61929 4.61929 4.5 6 4.5Z"
+      fill="#363538"
+    />
+    <path
+      d="M10 19.25C9.58579 19.25 9.25 19.5858 9.25 20C9.25 20.4142 9.58579 20.75 10 20.75H14C14.4142 20.75 14.75 20.4142 14.75 20C14.75 19.5858 14.4142 19.25 14 19.25H10Z"
+      fill="#363538"
+    />{" "}
+  </svg>
 );
 
-const CameraIcon =() => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5.25C4.37665 5.25 2.25 7.37665 2.25 10V14C2.25 16.6234 4.37665 18.75 7 18.75H14.5C16.3087 18.75 17.8535 17.6202 18.4671 16.0278L19.2626 16.8232C20.365 17.9257 22.25 17.1449 22.25 15.5858V8.41421C22.25 6.85513 20.365 6.07434 19.2626 7.17678L18.4671 7.97221C17.8535 6.37983 16.3087 5.25 14.5 5.25H7ZM20.3232 15.7626L18.75 14.1893V9.81066L20.3232 8.23744C20.4807 8.07995 20.75 8.19149 20.75 8.41421V15.5858C20.75 15.8085 20.4807 15.9201 20.3232 15.7626ZM3.75 10C3.75 8.20507 5.20507 6.75 7 6.75H14.5C16.0188 6.75 17.25 7.98122 17.25 9.5V14.5C17.25 16.0188 16.0188 17.25 14.5 17.25H7C5.20507 17.25 3.75 15.7949 3.75 14V10Z" fill="#363538" />
-</svg>);
-
+const CameraIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M7 5.25C4.37665 5.25 2.25 7.37665 2.25 10V14C2.25 16.6234 4.37665 18.75 7 18.75H14.5C16.3087 18.75 17.8535 17.6202 18.4671 16.0278L19.2626 16.8232C20.365 17.9257 22.25 17.1449 22.25 15.5858V8.41421C22.25 6.85513 20.365 6.07434 19.2626 7.17678L18.4671 7.97221C17.8535 6.37983 16.3087 5.25 14.5 5.25H7ZM20.3232 15.7626L18.75 14.1893V9.81066L20.3232 8.23744C20.4807 8.07995 20.75 8.19149 20.75 8.41421V15.5858C20.75 15.8085 20.4807 15.9201 20.3232 15.7626ZM3.75 10C3.75 8.20507 5.20507 6.75 7 6.75H14.5C16.0188 6.75 17.25 7.98122 17.25 9.5V14.5C17.25 16.0188 16.0188 17.25 14.5 17.25H7C5.20507 17.25 3.75 15.7949 3.75 14V10Z"
+      fill="#363538"
+    />
+  </svg>
+);
 
 const presets: PresetItem[] = [
   {
@@ -67,7 +92,7 @@ const Home = () => {
   const [largeOperationIsPressed, setLargeOperationIsPressed] =
     useState<null | ClickType>(null);
   const [tvIsOn, setTvIsOn] = useState(false);
-  const { isOnline, lastPing, reconnect } = useHeartbeat(15000);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!HeartBeat
+  const { isOnline, lastPing, reconnect } = useHeartbeat(15000); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!HeartBeat
 
   const camera1Control = useCameraQueue("cam1"); //Создаем контроллеры для камер
   const camera2Control = useCameraQueue("cam2");
@@ -99,7 +124,7 @@ const Home = () => {
   }, [setNotification, currentPreset]);
 
   useEffect(() => {
-    setPresetHandler()
+    setPresetHandler();
   }, [setPresetHandler]);
 
   useEffect(() => {
@@ -119,7 +144,7 @@ const Home = () => {
     async (v: boolean) => {
       try {
         setTvSwitchDisabled(true);
-        await setTvState(v ? "on" : "off")
+        await setTvState(v ? "on" : "off");
         setTvIsOn(v);
       } catch (error) {
         setNotification({
@@ -128,37 +153,39 @@ const Home = () => {
           text: handlerAxiosError(error),
         });
       } finally {
-        setTvSwitchDisabled(false)
+        setTvSwitchDisabled(false);
       }
     },
     [setNotification]
   );
 
   useEffect(() => {
-    setTvValueHandler(true)
+    setTvValueHandler(true);
     return () => {
-      setTvValueHandler(false)
-    }
-  }, [setTvValueHandler])
+      setTvValueHandler(false);
+    };
+  }, [setTvValueHandler]);
 
   return (
     <div className={styles.wrapper}>
       {/* Проверяем статус и пишем статус и соединение с сервером */}
-      <div style={{
-        position: 'fixed',
-        top: 10,
-        right: 10,
-        padding: '8px 12px',
-        backgroundColor: isOnline ? '#4CAF50' : '#f44336',
-        color: 'white',
-        borderRadius: '4px',
-        fontSize: '12px',
-        zIndex: 1000,
-        fontFamily: 'Arial, sans-serif'
-      }}>
-        {isOnline ? '🟢 Онлайн' : '🔴 Оффлайн'}
+      <div
+        style={{
+          position: "fixed",
+          top: 10,
+          right: 10,
+          padding: "8px 12px",
+          backgroundColor: isOnline ? "#4CAF50" : "#f44336",
+          color: "white",
+          borderRadius: "4px",
+          fontSize: "12px",
+          zIndex: 1000,
+          fontFamily: "Arial, sans-serif",
+        }}
+      >
+        {isOnline ? "🟢 Онлайн" : "🔴 Оффлайн"}
         {lastPing && (
-          <div style={{ fontSize: '10px', marginTop: '2px' }}>
+          <div style={{ fontSize: "10px", marginTop: "2px" }}>
             {lastPing.toLocaleTimeString()}
           </div>
         )}
@@ -166,31 +193,33 @@ const Home = () => {
 
       {/* Модальное окно при потере связи */}
       {!isOnline && (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          backgroundColor: 'rgba(0,0,0,0.9)',
-          color: 'white',
-          padding: '30px',
-          borderRadius: '12px',
-          textAlign: 'center',
-          zIndex: 1001,
-          minWidth: '300px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
-        }}>
-          <h3 style={{ margin: '0 0 15px 0' }}>⚠️ Потеря связи с сервером</h3>
-          <p style={{ margin: '10px 0' }}>Попытка переподключения...</p>
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "rgba(0,0,0,0.9)",
+            color: "white",
+            padding: "30px",
+            borderRadius: "12px",
+            textAlign: "center",
+            zIndex: 1001,
+            minWidth: "300px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+          }}
+        >
+          <h3 style={{ margin: "0 0 15px 0" }}>⚠️ Потеря связи с сервером</h3>
+          <p style={{ margin: "10px 0" }}>Попытка переподключения...</p>
           <button
             onClick={reconnect}
             style={{
-              padding: '8px 16px',
-              backgroundColor: '#2196F3',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
+              padding: "8px 16px",
+              backgroundColor: "#2196F3",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
             }}
           >
             Переподключиться вручную
@@ -201,7 +230,7 @@ const Home = () => {
         <div className={styles.tvManagement}>
           <div className={styles.tvManagement__left}>
             <div className={styles.tvManagement__left__icon}>
-             <DesktopIcon />
+              <DesktopIcon />
             </div>
             <div className={styles.tvManagement__left__text}>
               <span>
@@ -227,7 +256,16 @@ const Home = () => {
                 <b>Малая операционная</b>{" "}
               </span>
               <br />
-              <span style={{fontWeight: 400,fontSize: "14px",lineHeight: "143%",color: "rgba(255, 255, 255, 0.64)"}}>Камера 1</span>
+              <span
+                style={{
+                  fontWeight: 400,
+                  fontSize: "14px",
+                  lineHeight: "143%",
+                  color: "rgba(255, 255, 255, 0.64)",
+                }}
+              >
+                Камера 1
+              </span>
             </div>
           </div>
           <div className={styles.smallCamera__managing}>
@@ -251,9 +289,16 @@ const Home = () => {
                 <b>Большая операционная</b>{" "}
               </span>
               <br />
-              <span style={{fontWeight: 400, fontSize: "14px",lineHeight: "143%",
-              color: "rgba(255, 255, 255, 0.64)"
-              }}>Камера 2</span>
+              <span
+                style={{
+                  fontWeight: 400,
+                  fontSize: "14px",
+                  lineHeight: "143%",
+                  color: "rgba(255, 255, 255, 0.64)",
+                }}
+              >
+                Камера 2
+              </span>
             </div>
           </div>
           <div className={styles.smallCamera__managing}>
@@ -279,29 +324,38 @@ const Home = () => {
             className={styles.cameraBlock__current}
           >
             <svg
-  width="100%"
-  height="100%"
-  viewBox="0 0 703 448"
-  preserveAspectRatio="none"
-  xmlns="http://www.w3.org/2000/svg"
-  className={styles.currentBorderSvg}
->
-  <defs>
-    <linearGradient id="frameGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stopColor="#A2B2F7"/>
-      <stop offset="50%" stopColor="#CA97EA"/>
-      <stop offset="100%" stopColor="#90BFFD"/>
-    </linearGradient>
-  </defs>
-  <rect
-    x="4" y="4"
-    width="695" height="440"
-    rx="32" ry="32"
-    fill="none"
-    stroke="url(#frameGradient)"
-    strokeWidth="8"
-  />
-</svg>
+              width="100%"
+              height="100%"
+              viewBox="0 0 703 448"
+              preserveAspectRatio="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={styles.currentBorderSvg}
+            >
+              <defs>
+                <linearGradient
+                  id="frameGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="#A2B2F7" />
+                  <stop offset="50%" stopColor="#CA97EA" />
+                  <stop offset="100%" stopColor="#90BFFD" />
+                </linearGradient>
+              </defs>
+              <rect
+                x="4"
+                y="4"
+                width="695"
+                height="440"
+                rx="32"
+                ry="32"
+                fill="none"
+                stroke="url(#frameGradient)"
+                strokeWidth="8"
+              />
+            </svg>
 
             <div className={styles.cameraBlock__current__hls}>
               <PresetStream preset={currentPreset.type} />

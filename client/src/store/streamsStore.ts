@@ -3,6 +3,7 @@ export interface MirrorStream {
   mirrorStreeam: MediaStream;
   src: string;
   key: string
+  unavailable?: boolean
 }
 interface StreamStoreType {
   mirrorStreams: MirrorStream[];

@@ -4,12 +4,14 @@ type Props = {
   stream: MediaStream | null;
   autoPlay?: boolean;
   controls?: boolean;
+  unavailable?: boolean;
 };
 
 const MirrorPlayer: React.FC<Props> = ({
   stream,
   autoPlay = true,
   controls = false,
+  unavailable = false
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -27,7 +29,7 @@ const MirrorPlayer: React.FC<Props> = ({
       muted
       playsInline
       controls={controls}
-      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      style={{ width: "100%", height: "100%", objectFit: "cover", transform: unavailable ? "scale(.5)" : undefined }}
     />
   );
 };

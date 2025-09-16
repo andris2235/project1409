@@ -6,7 +6,7 @@ type Props = {
   src: string;
   autoPlay?: boolean;
   controls?: boolean;
-  onStreamReady: (stream: MediaStream) => void;
+  onStreamReady: (stream: MediaStream, unavailable: boolean) => void;
   poster: string;
 };
 function drawImageContain(
@@ -104,7 +104,7 @@ const HlsPlayer: React.FC<Props> = ({
     const drawLoop = () => {
       if (ctx) {
         // console.log(!error && video.readyState >= 2);
-        
+
         if (!error && video.readyState >= 2) {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         } else if (error) {
@@ -116,7 +116,7 @@ const HlsPlayer: React.FC<Props> = ({
 
     drawLoop();
     const stream = canvas.captureStream(30); // 30 FPS
-    onStreamReady(stream);
+    onStreamReady(stream, error);
     // video.addEventListener("play", () => {
     // });
     // const saveProgress = () => {
@@ -165,13 +165,16 @@ const HlsPlayer: React.FC<Props> = ({
         alt="Стрим недоступен"
         style={{
           position: "absolute",
-          top: 0,
+          top: "50%",
+          transform: "translateY(-50%)",
           left: 0,
           width: "100%",
           height: "100%",
           objectFit: "contain",
           transition: "opacity 0.5s ease",
           opacity: error ? 1 : 0,
+          maxHeight: "130px",
+          margin: "auto 0",
         }}
       />
       <canvas style={{ opacity: 0 }} ref={canvasRef} />

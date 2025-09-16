@@ -13,8 +13,8 @@ const MainPreset = () => {
 const setMirrorStreams = streamStore(state => state.setMirrorStreams);
 
   const setMirrorStreamsHandler = useCallback(
-    (stream: MediaStream, src: string, key: string) => {     
-      setMirrorStreams({mirrorStreeam: stream, src, key});
+    (stream: MediaStream, src: string, key: string,   unavailable?: boolean) => {     
+      setMirrorStreams({mirrorStreeam: stream, src, key, unavailable});
     },
     [setMirrorStreams]
   );
@@ -22,7 +22,7 @@ const setMirrorStreams = streamStore(state => state.setMirrorStreams);
   
   return hlsStreams.map((i) => (
     <div className={styles.firstPresetItem} key={i.key}>
-      <HlsPlayer poster={i.poster} onStreamReady={(s)=>setMirrorStreamsHandler(s, i.url, i.key)} src={i.url} />
+      <HlsPlayer poster={i.poster} onStreamReady={(s, unavailable)=>setMirrorStreamsHandler(s, i.url, i.key, unavailable)} src={i.url} />
     </div>
   ));
 };

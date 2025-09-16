@@ -16,7 +16,7 @@ const MirrorStreams = ({ preset }: PresetStreamProps) => {
       return (
         <>
           {firstStream && <div className={styles.fullPresetItem}>
-            <MirrorPlayer stream={firstStream.mirrorStreeam} />
+            <MirrorPlayer stream={firstStream.mirrorStreeam} unavailable={firstStream.unavailable}/>
           </div>}
           {secondStream && <div className={styles.topRightPresetItem}>
             <MirrorPlayer stream={secondStream.mirrorStreeam} />
@@ -29,7 +29,7 @@ const MirrorStreams = ({ preset }: PresetStreamProps) => {
       return (
         <>
           {firstStream && <div className={styles.fullPresetItem}>
-            <MirrorPlayer stream={firstStream.mirrorStreeam} />
+            <MirrorPlayer stream={firstStream.mirrorStreeam} unavailable={firstStream.unavailable}/>
           </div>}
           {secondStream && <div className={styles.topRightPresetItem}>
             <MirrorPlayer stream={secondStream.mirrorStreeam} />
@@ -48,7 +48,7 @@ const MirrorStreams = ({ preset }: PresetStreamProps) => {
           )}
           {secondStream && (
             <div className={styles.fourPresetItem}>
-              <MirrorPlayer stream={secondStream?.mirrorStreeam} />
+              <MirrorPlayer stream={secondStream?.mirrorStreeam}  />
             </div>
           )}
         </div>
