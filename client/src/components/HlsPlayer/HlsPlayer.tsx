@@ -6,8 +6,8 @@ type Props = {
   src: string;
   autoPlay?: boolean;
   controls?: boolean;
-  onStreamReady: (stream: MediaStream, unavailable: boolean) => void;
-  poster: string;
+  onStreamReady?: (stream: MediaStream, unavailable: boolean) => void;
+  poster?: string;
 };
 function drawImageContain(
   ctx: CanvasRenderingContext2D,
@@ -93,13 +93,17 @@ const HlsPlayer: React.FC<Props> = ({
       console.error("HLS not supported");
       return;
     }
-
-    const ctx = canvas.getContext("2d");
+    let stream: undefined | MediaStream
+    if (onStreamReady){
+          const ctx = canvas.getContext("2d");
     canvas.width = 1280;
     canvas.height = 720;
 
     const fallbackImg = new Image();
-    fallbackImg.src = poster;
+    if (poster){
+
+      fallbackImg.src = poster;
+    }
 
     const drawLoop = () => {
       if (ctx) {
@@ -115,8 +119,9 @@ const HlsPlayer: React.FC<Props> = ({
     };
 
     drawLoop();
-    const stream = canvas.captureStream(30); // 30 FPS
+    stream = canvas.captureStream(30); // 30 FPS
     onStreamReady(stream, error);
+    }
     // video.addEventListener("play", () => {
     // });
     // const saveProgress = () => {
@@ -132,7 +137,9 @@ const HlsPlayer: React.FC<Props> = ({
       if (video && !video.seeking) {
         setProgress(src, video.currentTime);
       }
-      stream.getTracks().forEach((track) => track.stop());
+      if (stream){
+        stream.getTracks().forEach((track) => track.stop());
+      }
       hls?.destroy();
 
       video.removeEventListener("error", handleError);
@@ -160,7 +167,7 @@ const HlsPlayer: React.FC<Props> = ({
         }}
       />
       {/* Fallback картинка */}
-      <img
+      {poster && <img
         src={poster}
         alt="Стрим недоступен"
         style={{
@@ -176,8 +183,8 @@ const HlsPlayer: React.FC<Props> = ({
           maxHeight: "130px",
           margin: "auto 0",
         }}
-      />
-      <canvas style={{ opacity: 0 }} ref={canvasRef} />
+      />}
+      {onStreamReady && <canvas style={{ opacity: 0 }} ref={canvasRef} />}
     </div>
   );
 };

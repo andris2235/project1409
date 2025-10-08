@@ -4,8 +4,19 @@ export enum PresetTypes{
   third = 3,
   fourth = 4
 }
+export enum SecondPresetTypes{
+  first = "operationFirst",
+  second = "operationSecond",
+  third = "operationThird",
+  fourth = "operationFourth"
+}
 
 export interface PresetItem{
   text: string
   type: PresetTypes
+}
+
+export interface SecondPresetItem{
+  text: string
+  type: SecondPresetTypes
 }
