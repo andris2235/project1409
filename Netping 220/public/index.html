@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Управление питанием</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            background: #f0f2f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .buttons {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+
+        #btn-on {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #btn-on:hover {
+            background-color: #45a049;
+        }
+
+        #btn-off {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #btn-off:hover {
+            background-color: #da190b;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+            height: 25px;
+            /* Резервируем место под статус */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Пульт управления монитором</h1>
+        <div class="buttons">
+            <button id="btn-on">Включить монитор</button>
+            <button id="btn-off">Выключить монитор</button>
+        </div>
+        <p id="status">Нажмите кнопку, чтобы отправить команду...</p>
+    </div>
+
+    <script>
+        const btnOn = document.getElementById('btn-on');
+        const btnOff = document.getElementById('btn-off');
+        const statusEl = document.getElementById('status');
+
+        // Функция для отправки команды на сервер
+        async function sendCommand(action) {
+            statusEl.textContent = 'Отправка команды...';
+            statusEl.style.color = '#555';
+
+            try {
+                const response = await fetch('/netping/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ command: action }) // Отправляем { "command": "on" } или { "command": "off" }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusEl.textContent = `Успешно: ${result.message}`;
+                    statusEl.style.color = 'green';
+                } else {
+                    statusEl.textContent = `Ошибка: ${result.message}`;
+                    statusEl.style.color = 'red';
+                }
+            } catch (error) {
+                statusEl.textContent = 'Критическая ошибка сети!';
+                statusEl.style.color = 'red';
+            }
+        }
+
+        // Назначаем обработчики на кнопки
+        btnOn.addEventListener('click', () => sendCommand('on'));
+        btnOff.addEventListener('click', () => sendCommand('off'));
+    </script>
+
+</body>
+
+</html>

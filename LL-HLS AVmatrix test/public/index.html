@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LL-HLS & Запись</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #000;
+            color: #fff;
+        }
+
+        video {
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        .controls {
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+
+        #status {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <!-- Новые поля -->
+        <label>
+            ФИО пациента:
+            <input id="patientName" type="text" placeholder="Иванов Иван Иванович" />
+        </label>
+        &nbsp;
+        <label>
+            Дата:
+            <input id="recordDate" type="date" />
+        </label>
+        <br /><br />
+
+        <!-- Кнопки -->
+        <button id="startBtn">Старт записи</button>
+        <button id="stopBtn" disabled>Стоп записи</button>
+        <span id="status">Запись остановлена</span>
+    </div>
+
+
+    <video id="video" controls autoplay muted></video>
+
+    <script>
+        // HLS.js воспроизведение
+        const video = document.getElementById('video');
+        const hlsUrl = `/hls/sub_stream.m3u8`;  //!!!!!!! Превью sub_stream, а запись main_Stream!
+        if (Hls.isSupported()) {
+            const hls = new Hls({ maxFragLookUpTolerance: 0.1 });
+            hls.loadSource(hlsUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = hlsUrl;
+            video.addEventListener('loadedmetadata', () => video.play());
+        }
+        // Кнопки записи
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const statusSpan = document.getElementById('status');
+
+        startBtn.onclick = async () => {
+            startBtn.disabled = true;
+
+            // Берём значения из полей
+            const name = document.getElementById('patientName').value.trim();
+            const date = document.getElementById('recordDate').value; // '' или 'YYYY-MM-DD'
+
+            // Отправляем JSON в POST
+            const res = await fetch('/record/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, date })
+            });
+
+            const json = await res.json();
+            if (json.status === 'started') {
+                statusSpan.textContent = `Запись в ${json.file}`;
+                stopBtn.disabled = false;
+            } else {
+                alert(json.error || 'Ошибка старта записи');
+                startBtn.disabled = false;
+            }
+        };
+        stopBtn.onclick = async () => {
+            stopBtn.disabled = true;
+            const res = await fetch('/record/stop', { method: 'POST' });
+            const json = await res.json();
+            if (json.status === 'stopped') {
+                statusSpan.textContent = 'Запись остановлена';
+                startBtn.disabled = false;
+            } else {
+                alert(json.error);
+                stopBtn.disabled = false;
+            }
+        };
+    </script>
+</body>
+
+</html>
