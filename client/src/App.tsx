@@ -1,11 +1,11 @@
 import NotificationProvider from "./components/UI/Notification/Notification";
-import Home from "./pages/Home/Home";
+import SecondPage from "./pages/Second/Second";
 
 function App() {
   return (
     <>
       <NotificationProvider />
-      <Home />
+      <SecondPage/>
     </>
   );
 }
