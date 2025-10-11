@@ -1,0 +1,93 @@
+.zoom-wrapper {
+  position: relative;
+  height: 50px;
+  width: 100%;
+  padding: 8px 12px;
+   border-radius: 24px;
+  /* Основной фон самого блока */
+  background: rgba(0, 0, 0, 0.01);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* Второй тёмный слой, как у джойстика */
+.zoom-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Блик при зуме — только поверх */
+.zoom-wrapper.active-up::after,
+.zoom-wrapper.active-down::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(180, 100, 210, 1) 0%,
+    rgba(130, 80, 200, 0.9) 80%
+  );
+  filter: blur(8px);
+  opacity: 0;
+  animation: zoomGlow 0.4s forwards;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+/* Позиция блика сверху */
+.zoom-wrapper.active-up::after {
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Позиция блика снизу */
+.zoom-wrapper.active-down::after {
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes zoomGlow {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.zoom-thumb {
+  height: 38px;
+  width: 24px;
+  background: #fff;
+  border-radius: 100px;
+  position: relative;
+  z-index: 2; /* над всеми слоями */
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  touch-action: none;
+}
+
+.zoom-thumb.up { transform: translateX(-100px); }
+.zoom-thumb.down { transform: translateX(100px); }
+
+.zoom-label {
+  position: relative;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 24px;
+}

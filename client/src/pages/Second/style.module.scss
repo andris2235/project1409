@@ -1,33 +1,302 @@
 $b: 1.5em;
 .wrapper {
-  height: 712px;
-  width: 1100px;
-  background-color: rgba(90,90,90,0.4);
+  height: 880px;
+  width: 1300px;
+  background-color: rgba(90, 90, 90, 0.4);
   margin: auto;
-  padding: 32px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 24px;
   border-radius: 15px;
   overflow: hidden;
+  &__content {
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    height: 800px;
+  }
+  * {
+    font-family: "Manrope", sans-serif !important;
+  }
 }
+.managementBlock {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 16px;
+  width: 384px;
+  justify-content: space-between;
+  .managing {
+    margin-top: 15px;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    height: 404px;
+    background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+    padding: 20px;
+    border-radius: 32px;
+    &__left {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      &__icon {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+      }
+      &__text {
+        color: #fff;
+      }
+      &__under {
+        color: rgba(255, 255, 255, 0.64);
+      }
+    }
+  }
+  .tvBlock {
+    height: 250px;
+    width: 100%;
+    border-radius: 32px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    transition: background 0.4s ease;
+    .tvBlockIcon {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      transition: background 0.4s ease;
+    }
+    .tvBlockStatus {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      h4 {
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 28px;
+        color: #fff;
+        margin: 0;
+      }
+      p {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 24px;
+        color: #fff;
+      }
+    }
+  }
+  .recordBlock {
+    height: 494px;
+    width: 100%;
+    border-radius: 32px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+    gap: 15px;
+    .recordBtn {
+      background-color: #fff;
+      height: 56px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border-radius: 32px;
+      cursor: pointer;
+      padding: 16px;
+      transition: all 0.2s linear;
+      .timer {
+        color: rgba(54, 53, 56, 0.64);
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 400;
+      }
+      .recordBtnLeft {
+        gap: 10px;
+        display: flex;
+        align-items: center;
+      }
+      .recording {
+        width: 12px;
+        height: 12px;
+        background-color: rgba(237, 77, 77, 1);
+      }
+      span {
+        color: rgba(54, 53, 56, 1);
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
+      }
+    }
+    .recordBtn:hover {
+      background-color: #ffffffc2;
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      .icon {
+        width: 50px;
+        border-radius: 50%;
+        background-color: #fff;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      h4 {
+        font-weight: 600;
+        color: #fff;
+        font-size: 18px;
+        line-height: 28px;
+      }
+    }
+  }
+}
+.cameraBlock {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 840px;
+  justify-content: space-between;
+  .miniCameras {
+    display: flex;
+    justify-content: space-between;
+    &__camera {
+      width: 270px;
+      height: 215px;
+      border-radius: 20px;
+      padding: 8px;
+      padding-bottom: 0;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+      > div {
+        height: 145px;
+        width: 100%;
+        border-radius: 18px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      p {
+        color: #fff;
+        font-size: 14px;
+        max-height: 40px;
+        line-height: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* количество строк */
+        -webkit-box-orient: vertical;
+        overflow: hidden; /* обрезать переполнение */
+        text-overflow: ellipsis; /* заменить обрезанный текст троеточием */
+        width: 100%;
+      }
+    }
+  }
+  &__current {
+    width: 100%;
+    height: 516px;
+    padding: 16px;
+    // padding-bottom: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    position: relative;
+    > svg.currentBorderSvg {
+      position: absolute;
+      inset: 0; // растягиваем на весь контейнер
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-.tabs{
+    // контент поверх SVG
+    > *:not(svg) {
+      position: relative;
+      z-index: 1;
+    }
+
+    &__hls {
+      height: 450px;
+      width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #fff;
+      font-size: 16px;
+      line-height: 24px;
+      margin-left: 10px;
+    }
+  }
+}
+.tabs {
   width: 100%;
-  height: 70px;
+  min-height: 58px !important;
   border-radius: 25px;
   background-color: #868581;
-  transition: all .3s linear;
+  transition: all 0.3s linear;
   padding: 5px;
-  .tab{
-    transition: all .3s linear;
+
+  .tab {
+    transition: background 0.3s linear;
     min-width: 50%;
-    border-radius: 25px;
+    border-radius: 100px;
     background: transparent;
-    color: #fff;
-  }
-  .currentTab{
+    height: 48px;
+    position: relative; // для ::before
+    overflow: hidden; // чтобы оверлей не вылезал
+    transition: transform 0.3s ease; // оставляем только то, что анимируем
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
       background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+      opacity: 0; // скрыт по умолчанию
+      transition: opacity 0.35s ease; // плавный переход
+      pointer-events: none;
+      z-index: 0;
+      will-change: opacity;
+    }
+    .tabLabel {
+      position: relative; // чтобы контент был выше оверлея
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      img {
+        height: 25px;
+        width: auto;
+      }
+      p {
+        color: #fff !important;
+        text-transform: none;
+        line-height: 28px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+    }
+  }
+  .currentTab {
+    // background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+    &::before {
+      opacity: 1;
+    }
   }
 }

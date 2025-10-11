@@ -32,7 +32,7 @@ const RightIcon = () => (
 
 interface JoystickProps {
   isPressed: ClickType | null;
-  setIsPressed: Dispatch<SetStateAction<ClickType | null>>;
+  setIsPressed: (c: ClickType | null)=> void | Dispatch<SetStateAction<ClickType | null>>;
 }
 
 const Joystick = ({ isPressed, setIsPressed }: JoystickProps) => {

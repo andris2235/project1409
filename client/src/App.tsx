@@ -1,11 +1,11 @@
 import NotificationProvider from "./components/UI/Notification/Notification";
-import SecondPage from "./pages/Second/Second";
+import MainRouter from "./Routes";
 
 function App() {
   return (
     <>
       <NotificationProvider />
-      <SecondPage/>
+      <MainRouter/>
     </>
   );
 }

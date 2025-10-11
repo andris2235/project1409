@@ -13,29 +13,8 @@ import notificationStore from "../../store/notificationStore";
 import { handlerAxiosError, sleep } from "../../utils/func";
 import { AnimatePresence, motion } from "framer-motion";
 import { setPreset, setTvState } from "../../http/cameraAPI";
+import { DesktopIcon } from "../../components/UI/icons";
 
-// Вместо <img src="/icons/desktop.png" alt="Desktop" />
-// создайте React-компонент:
-const DesktopIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M18 3H6C3.79086 3 2 4.79086 2 7V15C2 17.2091 3.79086 19 6 19H18C20.2091 19 22 17.2091 22 15V7C22 4.79086 20.2091 3 18 3ZM6 4.5H18C19.3807 4.5 20.5 5.61929 20.5 7V15C20.5 16.3807 19.3807 17.5 18 17.5H6C4.61929 17.5 3.5 16.3807 3.5 15V7C3.5 5.61929 4.61929 4.5 6 4.5Z"
-      fill="#363538"
-    />
-    <path
-      d="M10 19.25C9.58579 19.25 9.25 19.5858 9.25 20C9.25 20.4142 9.58579 20.75 10 20.75H14C14.4142 20.75 14.75 20.4142 14.75 20C14.75 19.5858 14.4142 19.25 14 19.25H10Z"
-      fill="#363538"
-    />{" "}
-  </svg>
-);
 
 const CameraIcon = () => (
   <svg

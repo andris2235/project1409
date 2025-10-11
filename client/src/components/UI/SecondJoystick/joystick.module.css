@@ -1,0 +1,166 @@
+/* Базовые стили контейнера джойстика */
+.joystick-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 228px;
+
+  /* ПРАВИЛЬНЫЙ фон — только один слой */
+  background: rgba(0, 0, 0, 0.01);
+
+  /* Поддержка backdrop-filter */
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+
+  border-radius: 56px;
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* Второй слой фона через псевдоэлемент */
+.joystick-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 56px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+/* Стили для кнопок джойстика */
+.joystick-button {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 100px;
+  /* из Figma */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  transition: all 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    0 1px 1px 0 rgba(0, 0, 0, 0.22),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* Стили для псевдоэлемента блика при нажатии */
+.joystick-container-press-up::after,
+.joystick-container-press-down::after,
+.joystick-container-press-left::after,
+.joystick-container-press-right::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 145px;
+  height: 65px;
+  background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
+  filter: blur(20px);
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+  transition: opacity 0.3s ease;
+  border-radius: 50%;
+  /* под кнопками */
+  z-index: 1;
+}
+
+/* Анимация появления блика */
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.7;
+  }
+}
+
+/* Позиционирование блика для каждого направления */
+.joystick-container-press-down::after {
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.joystick-container-press-up::after {
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.joystick-container-press-left::after {
+  top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  background: linear-gradient(180deg, #ca97ea 0%, #90bffd 100%);
+}
+
+.joystick-container-press-right::after {
+  top: 50%;
+  right: 10%;
+  transform: translate(50%, -50%) rotate(90deg);
+  background: linear-gradient(180deg, #ca97ea 0%, #90bffd 100%);
+}
+
+/* Стили состояния "нажатой" кнопки */
+.joystick-button.pressed {
+  width: 43px;
+  height: 43px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 1px 0 rgba(0, 0, 0, 0.22),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.1s ease,
+    height 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+/* Расстановка 4 кнопок джойстика */
+.joystick-button:nth-child(1) {
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.joystick-button:nth-child(2) {
+  top: 50%;
+  left: 25px;
+  transform: translateY(-50%);
+}
+
+.joystick-button:nth-child(3) {
+  top: 50%;
+  right: 25px;
+  transform: translateY(-50%);
+}
+
+.joystick-button:nth-child(4) {
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+}
