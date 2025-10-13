@@ -34,8 +34,8 @@
 /* Стили для кнопок джойстика */
 .joystick-button {
   position: absolute;
-  width: 44px;
-  height: 44px;
+  width: 64px;
+  height: 64px;
   background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 100px;
@@ -123,8 +123,8 @@
 
 /* Стили состояния "нажатой" кнопки */
 .joystick-button.pressed {
-  width: 43px;
-  height: 43px;
+  width: 63px;
+  height: 63px;
   border-radius: 100px;
   background: rgba(255, 255, 255, 0.08);
   box-shadow:

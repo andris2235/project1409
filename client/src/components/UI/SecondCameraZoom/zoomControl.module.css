@@ -31,7 +31,7 @@
 }
 
 /* Блик при зуме — только поверх */
-.zoom-wrapper.active-up::after,
+/* .zoom-wrapper.active-up::after,
 .zoom-wrapper.active-down::after {
   content: "";
   position: absolute;
@@ -49,7 +49,7 @@
   animation: zoomGlow 0.4s forwards;
   transition: opacity 0.2s ease;
   z-index: 1;
-}
+} */
 
 /* Позиция блика сверху */
 .zoom-wrapper.active-up::after {

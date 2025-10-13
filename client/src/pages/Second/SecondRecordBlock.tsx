@@ -21,16 +21,26 @@ const SecondRecordBlock = () => {
     setPatientName,
     choosedDevice,
     setChoosedDevice,
-  } = secondStore(useShallow((s) => ({
-    isRecording: s.isRecording,
-    setIsRecording: s.setIsRecording,
-    patientName: s.patientName,
-    setPatientName: s.setPatientName,
-    choosedDevice: s.choosedDevice,
-    setChoosedDevice: s.setChoosedDevice,
-  })));
+  } = secondStore(
+    useShallow((s) => ({
+      isRecording: s.isRecording,
+      setIsRecording: s.setIsRecording,
+      patientName: s.patientName,
+      setPatientName: s.setPatientName,
+      choosedDevice: s.choosedDevice,
+      setChoosedDevice: s.setChoosedDevice,
+    }))
+  );
   return (
-    <div className={styles.recordBlock}>
+    <div
+      style={{
+        border: isRecording ? "rgba(237, 77, 77, 1)" : "none",
+        boxShadow: isRecording
+          ? "0px 0px 16px 0px rgba(237, 77, 77, 0.48)"
+          : "none",
+      }}
+      className={styles.recordBlock}
+    >
       <div className={styles.title}>
         <div className={styles.icon}>
           <img

@@ -2,7 +2,8 @@ $b: 1.5em;
 .wrapper {
   height: 880px;
   width: 1300px;
-  background-color: rgba(90, 90, 90, 0.4);
+  background: rgba(128, 128, 128, 0.3);
+  background-blend-mode: luminosity;
   margin: auto;
   padding: 24px;
   display: flex;
@@ -11,6 +12,15 @@ $b: 1.5em;
   gap: 24px;
   border-radius: 15px;
   overflow: hidden;
+  border: 1px solid;
+  border-image-source: linear-gradient(
+    156.52deg,
+    rgba(255, 255, 255, 0.4) 2.12%,
+    rgba(255, 255, 255, 0.0001) 39%,
+    rgba(255, 255, 255, 0.0001) 54.33%,
+    rgba(255, 255, 255, 0.1) 93.02%
+  );
+
   &__content {
     display: flex;
     gap: 24px;
@@ -248,7 +258,7 @@ $b: 1.5em;
   width: 100%;
   min-height: 58px !important;
   border-radius: 25px;
-  background-color: #868581;
+  background-color: rgba(255, 255, 255, 0.2);
   transition: all 0.3s linear;
   padding: 5px;
 
