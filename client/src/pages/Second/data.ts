@@ -1,5 +1,6 @@
 import { baseURL } from "../../http";
 import type { SecondStreamType } from "../../types/second";
+import { HLS_KEY } from "../../utils/strConst";
 // import { SecondPresetTypes, type SecondPresetItem } from "../../types/stream";
 
 // const presets: SecondPresetItem[] = [
@@ -35,28 +36,34 @@ export const devices = [
     value: "source2",
   },
 ];
+export const SECOND__STREAMS = [
+  "/dev/console_big",
+  "/dev/console_small",
+  "rtsp://admin:admin@192.168.12.248:554/",
+  "rtsp://admin:admin@192.168.12.247:554/",
+];
 
 export const secondStreams: SecondStreamType[] = [
   {
-    url: `${baseURL}stream1/index.m3u8`,
+    url: `${baseURL}api/static/hls/console_big-${HLS_KEY}/index.m3u8`,
     key: "console_big",
     poster: "/bigNoVideo.png",
     text: "Эндоскопическая видеосистема Arthrex SynergyID",
   },
   {
-    url: `${baseURL}stream2/index.m3u8`,
+    url: `${baseURL}api/static/hls/console_small-${HLS_KEY}/index.m3u8`,
     key: "console_small",
     poster: "/smallNoVideo.png",
     text: "Персональный компьютер Windows",
   },
   {
-    url: `${baseURL}stream3/index.m3u8`,
+    url: `${baseURL}api/static/hls/Ptz_big-${HLS_KEY}/index.m3u8`,
     key: "Ptz_big",
     poster: "/noVideo.png",
     text: "Дополнительный источник видеосигнала 1",
   },
   {
-    url: `${baseURL}stream4/index.m3u8`,
+    url: `${baseURL}api/static/hls/Ptz_small-${HLS_KEY}/index.m3u8`,
     key: "Ptz_small",
     poster: "/noVideo.png",
     text: "Дополнительный источник видеосигнала 2",

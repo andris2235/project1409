@@ -14,7 +14,7 @@ import { handlerAxiosError, sleep } from "../../utils/func";
 import { AnimatePresence, motion } from "framer-motion";
 import { setPreset, setTvState } from "../../http/cameraAPI";
 import { DesktopIcon } from "../../components/UI/icons";
-
+import { presets } from "../../utils/firstStreams";
 
 const CameraIcon = () => (
   <svg
@@ -33,24 +33,6 @@ const CameraIcon = () => (
   </svg>
 );
 
-const presets: PresetItem[] = [
-  {
-    text: "Большая/малая операционные Quad>",
-    type: PresetTypes.first,
-  },
-  {
-    text: "Большая операционная Preset2",
-    type: PresetTypes.second,
-  },
-  {
-    text: "Малая операционная Preset3",
-    type: PresetTypes.third,
-  },
-  {
-    text: "Большая операционная Preset4",
-    type: PresetTypes.fourth,
-  },
-];
 const Home = () => {
   const [tvSwitchDisabled, setTvSwitchDisabled] = useState(false);
   const { setNotification } = notificationStore();

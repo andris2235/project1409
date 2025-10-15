@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import SecondZoomControl from "../../components/UI/SecondCameraZoom/SecondCameraZoom";
 import SecondJoystick from "../../components/UI/SecondJoystick/SecondJoystick";
+import { useCameraQueue } from "../../hooks/useCameraQueue";
 import secondStore from "../../store/secondStore";
-import SecondCameraBlock from "./SecondCameraBlock";
+import StreamCameraBlock from "./StreamCameraBlock";
 import styles from "./style.module.scss";
 import { useShallow } from "zustand/react/shallow";
 
@@ -19,6 +21,13 @@ const StreamTab = () => {
       setOperationIsPressed: s.setOperationIsPressed,
     }))
   );
+  const camera2Control = useCameraQueue("cam2");
+  useEffect(() => {
+    camera2Control.handleMove(operationIsPressed);
+  }, [operationIsPressed, camera2Control.handleMove]);
+  useEffect(() => {
+    camera2Control.handleZoom(operationZoom);
+  }, [operationZoom, camera2Control.handleZoom]);
   return (
     <>
       <div
@@ -28,7 +37,7 @@ const StreamTab = () => {
         <div className={styles.managing}>
           <div className={styles.managing__left}>
             <div className={styles.managing__left__icon}>
-              <img src="/icons/camera.png" alt="camera" />
+              <img src="/icons/video.svg" alt="video" />
             </div>
             <div className={styles.managing__left__text}>
               <span>
@@ -57,7 +66,7 @@ const StreamTab = () => {
           />
         </div>
       </div>
-            <SecondCameraBlock />
+      <StreamCameraBlock />
     </>
   );
 };

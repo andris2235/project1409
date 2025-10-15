@@ -51,7 +51,6 @@ function clearHlsDirectory() {
         console.error('Ошибка очистки папки HLS:', err.message);
     }
 }
-
 // // Функция для удаления старых сегментов, когда их становится больше 10
 // function cleanupOldSegments() {
 //     try {

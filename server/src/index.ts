@@ -6,11 +6,13 @@ import { Express } from "express";
 import * as cors from "cors";
 import ErrorHandlingMiddleware from "./middleware/ErrorHandlingMiddleware";
 import router from "./routes";
-import { staticFilePaths } from "./utils/filePathConsts";
+import { PUBLIC_DIR, staticFilePaths } from "./utils/filePathConsts";
 import { initFunc } from "./service/initFunctions";
 import * as path from "path";
 import * as os from "os";
 import { createStream, startSegmentCleaner } from "./service/createStream";
+import { connectMV } from "./service/multiviewer";
+import { startSecondStreams } from "./service/startSecondStreams";
 
 const app: Express = express();
 const port: number = parseInt(process.env.PORT || "8080", 10);
@@ -20,7 +22,6 @@ const MAX_RETRIES = 20; // 20 попыток = 10 минут
 
 app.use(cors());
 app.use(express.json());
-const PUBLIC_DIR = path.join(__dirname, "public");
 const STREAMS =
   os.platform() === "darwin"
     ? [0, 1, 2, 3] // macOS: индексы устройств avfoundation
@@ -71,7 +72,7 @@ const STREAM_DIRS = STREAMS.map((_, i) =>
 );
 
 startSegmentCleaner(STREAM_DIRS, 15, 10000);
-
+startSecondStreams()
 app.use(express.static(PUBLIC_DIR));
 staticFilePaths.forEach(({ route, folder }) => {
   app.use(route, express.static(folder));
@@ -82,7 +83,6 @@ app.use(express.static(path.join(__dirname, "build")));
 const server = http.createServer(app);
 app.use(ErrorHandlingMiddleware);
 
-import { connectMV } from "./service/multiviewer";
 
 const start = async () => {
   try {

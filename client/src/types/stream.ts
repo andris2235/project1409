@@ -14,6 +14,7 @@ export enum SecondPresetTypes{
 export interface PresetItem{
   text: string
   type: PresetTypes
+  secondText?: string
 }
 
 export interface SecondPresetItem{

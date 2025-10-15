@@ -33,7 +33,6 @@ const SecondCameraBlock = () => {
       otherStreams.map((i) => (i.key === current.key ? oldCurrent : i))
     );
   };
-  console.log(currentStream);
 
   return (
     <div className={styles.cameraBlock}>

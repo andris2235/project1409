@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useRef, useState, useEffect } from 'react'; // ✅ ИСПРАВЛЕНО: Добавлен useEffect в импорты
 
 import { moveCamera, stopCamera } from '../http/cameraAPI';
