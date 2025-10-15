@@ -4,9 +4,10 @@ interface PatientNameInputProps{
   label?: string
   value: string
   onChange: (v: string)=> void
+  disabled?: boolean
 }
 
-export default function PatientNameInput({label, value, onChange}: PatientNameInputProps) {
+export default function PatientNameInput({label, value, onChange, disabled}: PatientNameInputProps) {
   return (
     <Box
       sx={{
@@ -20,7 +21,7 @@ export default function PatientNameInput({label, value, onChange}: PatientNameIn
         height: "52px",
       }}
     >
-      <img src="/icons/patient.svg" alt="patient" />
+      <img src="/icons/patient.svg" alt="patient" fetchPriority="high"/>
       <Box
         sx={{
           flex: 1,
@@ -33,6 +34,7 @@ export default function PatientNameInput({label, value, onChange}: PatientNameIn
           value={value}
           onChange={e => onChange(e.target.value)}
           slotProps={textFieldSlotProps}
+          disabled={disabled}
         />
       </Box>
     </Box>
@@ -46,6 +48,7 @@ const textFieldSlotProps = {
     sx: {
       color: "white",
       "&.Mui-focused": { color: "white" },
+      "&.Mui-disabled": { color: "white" },
       "&.MuiInputLabel-shrink": {
         transform: "translate(0px, -1px) scale(0.8)",
       },
@@ -56,6 +59,7 @@ const textFieldSlotProps = {
       p: 0,
     },
   },
+  
   input: {
     sx: {
       p: 0,

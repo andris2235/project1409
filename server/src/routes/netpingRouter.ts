@@ -9,4 +9,9 @@ router.post(
   tryCatch(netpingControllers.netpingControl)
 );
 
+router.get(
+  "/status",
+  tryCatch(netpingControllers.getNetpingStatus)
+);
+
 export default router;

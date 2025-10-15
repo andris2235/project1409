@@ -35,11 +35,17 @@ interface SecondStoreType {
   setOperationZoom: (operationZoom: ZoomValues) => void;
   operationIsPressed: null | ClickType;
   setOperationIsPressed: (operationIsPressed: null | ClickType) => void;
+  recordStartTime: null | Date;
+  setRecordStartTime: (recordStartTime: null | Date)=> void
 }
 
 const secondStore = create<SecondStoreType>()(
   persist(
     (set, get) => ({
+      recordStartTime: null,
+      setRecordStartTime(recordStartTime) {
+        set({recordStartTime})
+      },
       operationIsPressed: null,
       setOperationIsPressed(operationIsPressed) {
         set({ operationIsPressed });

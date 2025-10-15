@@ -25,7 +25,7 @@ const SecondHeader = () => {
         }`}
         label={
           <div className={styles.tabLabel}>
-            <img src="/icons/operation.svg" alt="operation" />
+            <img src="/icons/operation.svg" alt="operation" fetchPriority="high"/>
             <p>Операционная</p>
           </div>
         }
@@ -40,7 +40,7 @@ const SecondHeader = () => {
         onClick={() => setCurrentTab("stream")}
         label={
           <div className={styles.tabLabel}>
-            <img src="/icons/stream.svg" alt="operation" />
+            <img src="/icons/stream.svg" alt="operation" fetchPriority="high"/>
             <p>Трансляция</p>
           </div>
         }

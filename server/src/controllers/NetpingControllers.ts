@@ -1,5 +1,6 @@
-import { Request, Response } from "express";
-import { controlNetPingRelay } from "../service/netping";
+import { NextFunction, Request, Response } from "express";
+import { controlNetPingRelay, getNetPingRelayStatus } from "../service/netping";
+import ApiError from "../error/ApiError";
 
 class NetpingController {
   async netpingControl(req: Request, res: Response) {
@@ -16,8 +17,17 @@ class NetpingController {
       return res.json(result);
     } else {
       // Если пришла какая-то другая команда
-      return res.status(400).json({ success: false, message: "Неверная команда" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Неверная команда" });
     }
+  }
+  async getNetpingStatus(req: Request, res: Response, next: NextFunction) {
+    const {success, status, message} = await getNetPingRelayStatus(1);
+    if (!success || !status){
+      return next(ApiError.internal(message))
+    }
+    return res.json(status)
   }
 }
 

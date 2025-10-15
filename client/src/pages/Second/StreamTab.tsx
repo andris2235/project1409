@@ -37,7 +37,7 @@ const StreamTab = () => {
         <div className={styles.managing}>
           <div className={styles.managing__left}>
             <div className={styles.managing__left__icon}>
-              <img src="/icons/video.svg" alt="video" />
+              <img src="/icons/video.svg" alt="video" fetchPriority="high"/>
             </div>
             <div className={styles.managing__left__text}>
               <span>

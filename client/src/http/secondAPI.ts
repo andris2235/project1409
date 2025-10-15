@@ -16,6 +16,19 @@ export const netpingControl = async (command: NetpingAction) => {
   );
 };
 
+export const getNetpingStatus = async (): Promise<NetpingAction>  => {
+  return withRetry(
+    async () => {
+      const { data } = await $host.get(
+        `api/netping/status`,
+        { timeout: 8000 }
+      );
+      return data;
+    },
+    { maxRetries: 2 }
+  );
+};
+
 export const switchInput = async (params: number) => {
   return withRetry(
     async () => {

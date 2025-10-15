@@ -1,12 +1,12 @@
 export type NetpingAction = "on" | "off";
 
 export interface RecordStartBody {
-  date?: string;
+  stream: string;
   name: string;
 }
 export interface RecordData {
   patientName: string;
-  ts: string;
+  ts: number;
   fileName: string;
   stream: string
 }

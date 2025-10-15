@@ -1,6 +1,6 @@
 export interface RecordData {
   patientName: string;
-  ts: string;
+  ts: number;
   fileName: string;
   stream: string
 }

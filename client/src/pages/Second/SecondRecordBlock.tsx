@@ -12,8 +12,15 @@ import {
 import { devices } from "./data";
 import secondStore from "../../store/secondStore";
 import { useShallow } from "zustand/react/shallow";
+import { useCallback, useEffect, useState } from "react";
+import { handlerAxiosError } from "../../utils/func";
+import notificationStore from "../../store/notificationStore";
+import { getRecordData, recordStart, recordStop } from "../../http/secondAPI";
+import RecordTimer from "./RecordTimer";
 
 const SecondRecordBlock = () => {
+  const { setNotification } = notificationStore();
+  const [loading, setLoading] = useState(false);
   const {
     isRecording,
     setIsRecording,
@@ -21,6 +28,8 @@ const SecondRecordBlock = () => {
     setPatientName,
     choosedDevice,
     setChoosedDevice,
+    recordStartTime,
+    setRecordStartTime,
   } = secondStore(
     useShallow((s) => ({
       isRecording: s.isRecording,
@@ -29,8 +38,89 @@ const SecondRecordBlock = () => {
       setPatientName: s.setPatientName,
       choosedDevice: s.choosedDevice,
       setChoosedDevice: s.setChoosedDevice,
+      recordStartTime: s.recordStartTime,
+      setRecordStartTime: s.setRecordStartTime,
     }))
   );
+  const getInitData = useCallback(async () => {
+    try {
+      await getRecordData().then((data) => {
+        if (data) {
+          const { patientName, stream, ts } = data;
+          setRecordStartTime(new Date(ts));
+          setChoosedDevice(stream as Device);
+          setPatientName(patientName ?? "");
+          setIsRecording(true);
+        }
+      });
+    } catch (error) {
+      setNotification({
+        visible: true,
+        type: "error",
+        text: handlerAxiosError(
+          error,
+          "Произошла ошибка при получение статуса о старых записах"
+        ),
+      });
+    }
+  }, [
+    setPatientName,
+    setChoosedDevice,
+    setRecordStartTime,
+    setNotification,
+    setIsRecording,
+  ]);
+
+  useEffect(() => {
+    getInitData();
+  }, [getInitData]);
+
+  const recordStartHandler = async () => {
+    try {
+      if (!choosedDevice) return;
+      setLoading(true);
+      await recordStart({ name: patientName, stream: choosedDevice }).then(
+        () => {
+          setIsRecording(true);
+          setRecordStartTime(new Date());
+        }
+      );
+    } catch (error) {
+      setNotification({
+        visible: true,
+        type: "error",
+        text: handlerAxiosError(
+          error,
+          "Произошла ошибка при попытке начать запись"
+        ),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const recordStopHandler = async () => {
+    try {
+      setLoading(true);
+      await recordStop().then(() => {
+        setIsRecording(false);
+        setRecordStartTime(null);
+        setChoosedDevice(null);
+        setPatientName("");
+      });
+    } catch (error) {
+      setNotification({
+        visible: true,
+        type: "error",
+        text: handlerAxiosError(
+          error,
+          "Произошла ошибка при попытке остановить запись"
+        ),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div
       style={{
@@ -46,6 +136,7 @@ const SecondRecordBlock = () => {
           <img
             src={isRecording ? "/icons/recordActive.svg" : "/icons/record.svg"}
             alt="record"
+            fetchPriority="high"
           />
         </div>
         <h4>Запись c камеры</h4>
@@ -54,13 +145,16 @@ const SecondRecordBlock = () => {
         <PatientNameInput
           value={patientName}
           onChange={(v) => setPatientName(v)}
+          disabled={isRecording}
         />
       </div>
       <div>
         <FormControl fullWidth>
           <RadioGroup
             value={choosedDevice}
-            onChange={(e) => setChoosedDevice(e.target.value as Device)}
+            onChange={(e) =>
+              !isRecording && setChoosedDevice(e.target.value as Device)
+            }
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
             {devices.map((item) => {
@@ -117,7 +211,10 @@ const SecondRecordBlock = () => {
       </div>
       <div>
         <button
-          onClick={() => setIsRecording(!isRecording)}
+          onClick={() =>
+            isRecording ? recordStopHandler() : recordStartHandler()
+          }
+          disabled={!choosedDevice || loading}
           style={{
             justifyContent: isRecording ? "space-between" : "center",
             border: isRecording ? "rgba(237, 77, 77, 1)" : "none",
@@ -136,7 +233,7 @@ const SecondRecordBlock = () => {
               <span>{isRecording ? "Остановить запись" : "Начать запись"}</span>
             </div>
           </div>
-          {isRecording && <p className={styles.timer}>00:03:21</p>}
+          {isRecording && recordStartTime && <RecordTimer />}
         </button>
       </div>
     </div>

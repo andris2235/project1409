@@ -25,15 +25,15 @@ import { HLS_KEY } from "../../utils/strConst";
 export const devices = [
   {
     label: "Эндоскопическая видеосистема Arthrex SynergyID",
-    value: "endo",
+    value: "console_big",
   },
   {
     label: "Дополнительный источник видеосигнала 1",
-    value: "source1",
+    value: "console_small",
   },
   {
     label: "Дополнительный источник видеосигнала 2",
-    value: "source2",
+    value: "Ptz_big",
   },
 ];
 export const SECOND__STREAMS = [

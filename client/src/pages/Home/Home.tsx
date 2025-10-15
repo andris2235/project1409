@@ -210,7 +210,7 @@ const Home = () => {
         <div className={styles.smallCamera}>
           <div className={styles.smallCamera__left}>
             <div className={styles.smallCamera__left__icon}>
-              <img src="/icons/camera.png" alt="camera" />
+              <img src="/icons/camera.png" alt="camera" fetchPriority="high"/>
             </div>
             <div className={styles.smallCamera__left__text}>
               <span>

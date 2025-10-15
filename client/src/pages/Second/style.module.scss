@@ -120,6 +120,10 @@ $b: 1.5em;
     flex-direction: column;
     background: linear-gradient(90deg, #ca97ea 0%, #90bffd 100%);
     gap: 15px;
+    .recordBtn:disabled {
+      opacity: 0.48;
+      pointer-events: none;
+    }
     .recordBtn {
       background-color: #fff;
       height: 56px;

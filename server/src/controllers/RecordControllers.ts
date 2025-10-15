@@ -21,13 +21,14 @@ class RecordControllers {
     }
     const { name = "", stream } = req.body;
     if (!stream || typeof stream !== "string"){
-      return next(ApiError.badRequest("Url is required"))
+      return next(ApiError.badRequest("stream key is required"))
     }
     const RECORD_URL = `${stream}/${RECORD_KEY}`;
     // Формируем имя: если есть имя пациента — используем его, плюс дата (если есть)
     // нужно ли добавить название стрима???
     const safePatient = safeName(name);
-    const ts = new Date().toISOString().replace(/[:.]/g, "-");
+    const now = new Date()
+    const ts = now.toISOString().replace(/[:.]/g, "-");
 
     const fileName = `${safePatient.length > 0 ? safePatient : "record"}-${ts}.mp4`;
     const output = path.join(RECORD_DIR, fileName);
@@ -62,7 +63,7 @@ class RecordControllers {
       console.error("Ошибка запуска записи:", err.message);
       recordProcess = null;
     });
-    recordData = {patientName: safePatient, ts, fileName, stream}
+    recordData = {patientName: safePatient, ts: now.getTime(), fileName, stream}
     return res.json({ status: "started", file: fileName });
   }
   async recordStop(_: Request, res: Response) {
