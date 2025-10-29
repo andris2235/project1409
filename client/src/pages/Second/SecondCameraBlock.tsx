@@ -33,7 +33,7 @@ const SecondCameraBlock = () => {
       otherStreams.map((i) => (i.key === current.key ? oldCurrent : i))
     );
   };
-
+  
   return (
     <div className={styles.cameraBlock}>
       <AnimatePresence mode="wait">

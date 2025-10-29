@@ -49,20 +49,23 @@ const HlsPlayer: React.FC<Props> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState(false);
+  console.log(src);
+  
   useEffect(() => {
     const video = videoRef.current;
 
     const handleError = () => setError(true);
     const handleCanPlay = () => setError(false);
     const canvas = canvasRef.current;
-    if (!video || !canvas) return;
+    if (!video || (onStreamReady && !canvas)) return;
 
     let hls: Hls | null = null;
-
+    
     if (Hls.isSupported()) {
       hls = new Hls();
       hls.loadSource(src);
       hls.attachMedia(video);
+      
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         const lastTime = getProgress(src);
         if (!isNaN(lastTime)) {
@@ -94,7 +97,7 @@ const HlsPlayer: React.FC<Props> = ({
       return;
     }
     let stream: undefined | MediaStream;
-    if (onStreamReady) {
+    if (onStreamReady && canvas) {
       const ctx = canvas.getContext("2d");
       canvas.width = 1280;
       canvas.height = 720;
