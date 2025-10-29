@@ -32,21 +32,26 @@ export interface StreamConfig {
 
 function getFFmpegInputArgs(deviceId: number | string): string[] {
   const platform = os.platform();
-  
+
   //Проверка на RTSP URL
   if (typeof deviceId === 'string' && deviceId.startsWith('rtsp://')) {
-    console.log(`[RTSP] Using RTSP input: ${deviceId}`);
+    console.log(`[RTSP] Using RTSP input with VAAPI decode: ${deviceId}`); // Обновили лог
     return [
-      "-rtsp_transport", "tcp",        // TCP для надежности
-      "-fflags", "+genpts", // ✅ ИСПРАВИТЬ timing issues
-     "-avoid_negative_ts", "make_zero", // ✅ ИСПРАВИТЬ negative timestamps
-      "-i", `${deviceId}`,             // RTSP URL
+      // === ДОБАВЛЕНО: Аппаратное декодирование ===
+      "-hwaccel", "vaapi",
+      "-hwaccel_output_format", "vaapi",
+      // =========================================
+
+      "-rtsp_transport", "tcp",
+      "-fflags", "+genpts",
+      "-avoid_negative_ts", "make_zero",
+      "-i", `${deviceId}`,
     ];
   }
 
-// Существующая логика для локальных устройств
+  // Существующая логика для локальных устройств
   // const isPtz = deviceId === "/dev/Ptz_big" || deviceId === "/dev/Ptz_small";
-if (platform === "darwin") {
+  if (platform === "darwin") {
     // macOS (avfoundation)
     return [
       "-f", "avfoundation",
@@ -58,7 +63,7 @@ if (platform === "darwin") {
     // Linux (v4l2)
     return [
       "-f", "v4l2",
-      "-framerate", "15", 
+      "-framerate", "15",
       "-video_size", "640x480",
       "-thread_queue_size", "512",
       "-i", `${deviceId}`,
@@ -103,14 +108,16 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
       let isRTSP = false;
 
       if (typeof rawDevice === 'string') {
-      isRTSP = rawDevice.startsWith('rtsp://');
+        isRTSP = rawDevice.startsWith('rtsp://');
       }
       const hlsArgs = [
-        "-c:v", isRTSP ? "copy" : "libx264",
-        ...(isRTSP ? [] : [
-        "-preset", "ultrafast",
-        "-tune", "zerolatency",
-        ]),
+        // === ИЗМЕНЕНО: Настройки кодирования ===
+        "-c:v", "h264_vaapi",             // 1. Всегда используем кодек h264_vaapi
+        "-vf", "scale_vaapi=640:360",   // 2. Аппаратный скейлинг до 640x360
+        "-r", "5",                     // 3. Устанавливаем 5 к/с
+        "-b:v", "150k",                 // 4. Ставим битрейт 250k (2M не нужно для 360p)
+        // 5. Параметры "-preset" и "-tune" удалены, т.к. они для libx264
+        // =======================================
         "-g",
         "30",
         "-sc_threshold",
@@ -136,9 +143,16 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
 
       console.log(`[Stream${config.index + 1}] Starting FFmpeg with args:`, ffmpegArgs.join(' '));
 
-      // ✅ КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Запуск ffmpeg с полной обработкой ошибок
-      const ffmpeg = spawn("ffmpeg", ffmpegArgs);
-      
+      // ✅ ИСПРАВЛЕНИЕ: Запуск ffmpeg с переменной окружения для VAAPI/iHD
+      const ffmpeg = spawn("ffmpeg", ffmpegArgs, {
+        // Копируем текущие переменные окружения, чтобы процесс работал нормально
+        env: {
+          ...process.env,
+          // Добавляем переменную, которую ищет библиотека libva
+          LIBVA_DRIVER_NAME: "iHD"
+        }
+      });
+
       // ✅ ДОБАВЛЕНО: Флаг для отслеживания успешного запуска
       let streamStarted = false;
       let initTimeout: NodeJS.Timeout;
@@ -148,7 +162,7 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
         const errorMsg = `FFmpeg spawn failed: ${error.message}`;
         logger.error(`Stream${config.index + 1} spawn error:`, error);
         console.error(`❌ Stream${config.index + 1} spawn error:`, errorMsg);
-        
+
         if (initTimeout) clearTimeout(initTimeout);
         reject(new Error(errorMsg));
       });
@@ -157,10 +171,10 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
       ffmpeg.stderr.on("data", (data) => {
         const output = data.toString();
         console.log(`[Stream${config.index + 1}] FFmpeg: ${output.trim()}`);
-        
+
         // ✅ ДОБАВЛЕНО: Проверка на успешный запуск FFmpeg
         if (!streamStarted && (
-          output.includes("Press [q] to stop") || 
+          output.includes("Press [q] to stop") ||
           output.includes("frame=") ||
           output.includes("Opening ") ||
           output.includes("Stream mapping:")
@@ -171,7 +185,7 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
           logger.info(`Stream${config.index + 1} FFmpeg started successfully`);
           resolve();
         }
-        
+
         // ✅ ДОБАВЛЕНО: Проверка на критические ошибки устройства
         if (output.includes("No such file or directory")) {
           if (initTimeout) clearTimeout(initTimeout);
@@ -181,7 +195,7 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
           reject(new Error(errorMsg));
           return;
         }
-        
+
         if (output.includes("Permission denied")) {
           if (initTimeout) clearTimeout(initTimeout);
           const errorMsg = `Permission denied for device: ${config.streamsList[config.index]}`;
@@ -190,7 +204,7 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
           reject(new Error(errorMsg));
           return;
         }
-        
+
         if (output.includes("Device or resource busy")) {
           if (initTimeout) clearTimeout(initTimeout);
           const errorMsg = `Device busy: ${config.streamsList[config.index]}`;
@@ -213,14 +227,14 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
       // ✅ УЛУЧШЕНО: Обработка выхода процесса
       ffmpeg.on("exit", (code, signal) => {
         if (initTimeout) clearTimeout(initTimeout);
-        
-        const exitMsg = signal ? 
-          `FFmpeg killed with signal ${signal}` : 
+
+        const exitMsg = signal ?
+          `FFmpeg killed with signal ${signal}` :
           `FFmpeg exited with code ${code}`;
-          
+
         logger.info(`Stream${config.index + 1} ${exitMsg}`);
         console.log(`[Stream${config.index + 1}] ${exitMsg}`);
-        
+
         // Если процесс завершился до успешного запуска - это ошибка
         if (!streamStarted && code !== 0) {
           const errorMsg = `FFmpeg failed to start: ${exitMsg}`;
@@ -236,7 +250,7 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
           const errorMsg = `Stream initialization timeout (10s)`;
           console.error(`❌ Stream${config.index + 1} timeout:`, errorMsg);
           logger.error(`Stream${config.index + 1} timeout:`, errorMsg);
-          
+
           // Убиваем процесс если он завис
           if (!ffmpeg.killed) {
             ffmpeg.kill('SIGTERM');
@@ -246,7 +260,7 @@ export function createStream(app: Express, config: StreamConfig): Promise<void> 
               }
             }, 5000);
           }
-          
+
           reject(new Error(errorMsg));
         }
       }, 10000); // 10 секунд на запуск
@@ -289,11 +303,11 @@ export function startSegmentCleaner(
 
           if (segments.length > maxSegments) {
             const toDelete = segments.slice(0, segments.length - maxSegments);
-            
+
             toDelete.forEach((segment) => {
               const filePath = path.join(STREAM_PATH, segment.name);
               const fileAge = Date.now() - segment.stats.mtime.getTime();
-              
+
               // ✅ КРИТИЧНО: Удаляем только файлы старше 30 секунд
               if (fileAge > 30000) {
                 fs.unlink(filePath, (err) => {
