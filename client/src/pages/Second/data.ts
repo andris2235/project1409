@@ -51,10 +51,11 @@ export const secondStreams: SecondStreamType[] = [
     text: "Эндоскопическая видеосистема Arthrex SynergyID",
   },
   {
-    url: `${baseURL}video/example.mp4`,
+    url: `/video/example.mp4`,
     key: "console_small",
     poster: "/smallNoVideo.png",
     text: "Персональный компьютер Windows",
+    staticFile: true,
   },
   {
     url: `${baseURL}api/static/hls/fiveth-${HLS_KEY}/index.m3u8`,

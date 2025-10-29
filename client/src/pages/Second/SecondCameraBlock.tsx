@@ -83,6 +83,7 @@ const SecondCameraBlock = () => {
             <PresetVideoItem
               streamUrl={currentStream.url}
               poster={currentStream.poster}
+              staticFile={currentStream.staticFile}
             />
           </div>
           <div>
@@ -109,7 +110,7 @@ const SecondCameraBlock = () => {
             className={styles.miniCameras__camera}
           >
             <div>
-              <PresetVideoItem streamUrl={i.url} poster={i.poster} />
+              <PresetVideoItem staticFile={i.staticFile} streamUrl={i.url} poster={i.poster} />
             </div>
             <p>{i.text}</p>
           </motion.div>

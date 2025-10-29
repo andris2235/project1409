@@ -8,6 +8,7 @@ type Props = {
   controls?: boolean;
   onStreamReady?: (stream: MediaStream, unavailable: boolean) => void;
   poster?: string;
+  staticFile? : boolean;
 };
 function drawImageContain(
   ctx: CanvasRenderingContext2D,
@@ -44,12 +45,12 @@ const HlsPlayer: React.FC<Props> = ({
   controls = false,
   onStreamReady,
   poster,
+  staticFile = false,
 }) => {
   const { setProgress, getProgress } = streamStore();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState(false);
-  console.log(src);
   
   useEffect(() => {
     const video = videoRef.current;
@@ -57,7 +58,7 @@ const HlsPlayer: React.FC<Props> = ({
     const handleError = () => setError(true);
     const handleCanPlay = () => setError(false);
     const canvas = canvasRef.current;
-    if (!video || (onStreamReady && !canvas)) return;
+    if (!video || (onStreamReady && !canvas) || staticFile) return;
 
     let hls: Hls | null = null;
     
@@ -147,7 +148,7 @@ const HlsPlayer: React.FC<Props> = ({
       video.removeEventListener("error", handleError);
       video.removeEventListener("canplay", handleCanPlay);
     };
-  }, [src, onStreamReady, setProgress, getProgress, autoPlay, error, poster]);
+  }, [src, onStreamReady, setProgress, getProgress, autoPlay, error, poster, staticFile]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -155,6 +156,7 @@ const HlsPlayer: React.FC<Props> = ({
         ref={videoRef}
         controls={controls}
         autoPlay={autoPlay}
+        src={staticFile ? src : undefined}
         // onError={() => setError(true)}
         // onCanPlay={() => setError(false)}
         playsInline
