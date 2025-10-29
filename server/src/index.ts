@@ -94,6 +94,9 @@ const start = async () => {
     server.listen(port, "0.0.0.0", async () => {
       console.log(`Server is running on port ${port}`);
     });
+    app.get("/second", async (req, res) => {
+      res.sendFile(path.join(__dirname, "build", "index.html"));
+    });
     app.get("*", async (req, res) => {
       res.sendFile(path.join(__dirname, "build", "index.html"));
     });
