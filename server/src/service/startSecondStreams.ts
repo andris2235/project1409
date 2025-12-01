@@ -4,8 +4,8 @@ import { clearHlsDirectory, startHls } from "./recordStream";
 const retryAttempts = new Map<number, number>();
 const MAX_RETRIES = 20; // 20 попыток = 10 минут
 export const SECOND__STREAMS:SecondStreamType[] = [
-  {stream: "/dev/console_big", key: "first"},
-  // {stream: "/dev/console_small", key: "second"},
+  {stream: "rtsp://192.168.12.241/sub_stream_arthrex", key: "first"},
+  {stream: "rtsp://192.168.12.241/sub_stream_storz", key: "second"},
   {stream: "rtsp://admin:admin@192.168.12.248:554/", key: "fiveth"},
   {stream: "rtsp://admin:admin@192.168.12.247:554/", key: "sixth"},
 ];
