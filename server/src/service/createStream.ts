@@ -63,8 +63,8 @@ function getFFmpegInputArgs(deviceId: number | string): string[] {
     // Linux (v4l2)
     return [
       "-f", "v4l2",
-      "-framerate", "15",
-      "-video_size", "640x480",
+      "-framerate", "10",
+      "-video_size", "640x360",
       "-thread_queue_size", "512",
       "-i", `${deviceId}`,
     ];

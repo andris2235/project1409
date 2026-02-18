@@ -25,7 +25,7 @@ app.use(express.json());
 const STREAMS =
   os.platform() === "darwin"
     ? [0, 1, 2, 3] // macOS: индексы устройств avfoundation
-    : ["/dev/console_big", "/dev/console_small", "rtsp://admin:admin@192.168.12.248:554/", "rtsp://admin:admin@192.168.12.247:554/"];
+    : ["rtsp://192.168.12.241/sub_stream_arthrex", "rtsp://192.168.12.241/sub_stream_storz", "rtsp://admin:admin@192.168.12.248:554/", "rtsp://admin:admin@192.168.12.247:554/"];
 
 // STREAMS.forEach((i, index) =>
 //   createStream(app, {
