@@ -6,8 +6,8 @@ const MAX_RETRIES = 20; // 20 попыток = 10 минут
 export const SECOND__STREAMS:SecondStreamType[] = [
   {stream: "rtsp://192.168.12.241/sub_stream_arthrex", key: "first"},
   {stream: "rtsp://192.168.12.241/sub_stream_storz", key: "second"},
-  {stream: "rtsp://admin:admin@192.168.12.248:554/", key: "fiveth"},
-  {stream: "rtsp://admin:admin@192.168.12.247:554/", key: "sixth"},
+  {stream: "rtsp://192.168.12.241/sub_stream_cons3", key: "fiveth"},
+  {stream: "rtsp://192.168.12.241/sub_stream_cons4", key: "sixth"},
 ];
 
 export async function startSecondStreams() {
